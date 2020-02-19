@@ -61,8 +61,9 @@ class BasicEvent(Gate):
         child gates.
         :param name: Name of the BasicEvent.
         :param initial_state: Initial state of the BasicEvent.
-        :param initial_probability: Initial probability of the
-               BasicEvent.
+        :param initial_probability: Initial probability of the BasicEvent.
+               When supplying a fraction use a string ('1/7') or an
+               instance of the class Fraction.
         """
         super().__init__('BASIC', name, [])
         self.state = initial_state
@@ -87,6 +88,8 @@ class BasicEvent(Gate):
     def set_probability(self, prob):
         """
         Set the probability of a BasicEvent.
+        When supplying a fraction use a string ('1/7') or an
+        instance of the class Fraction.
         :param prob: The new probability.
         """
         self.probability = Fraction(str(prob))
@@ -271,7 +274,8 @@ class FaultTree:
     def set_probability(self, name, prob):
         """
         Sets the probability of some basic event to the given
-        value.
+        value. When supplying a fraction use a string ('1/7') or an
+        instance of the class Fraction.
         :param name: The name of the basic event.
         :param prob: The new probability for the given event.
         """
@@ -284,7 +288,8 @@ class FaultTree:
         Uses the set_probability function multiple times.
         The input should be a dictionary keyed on the names
         of the basic events and valued with their
-        probabilities.
+        probabilities. When supplying a fraction use a string
+        ('1/7') or an instance of the class Fraction.
         """
         for name, prob in probabilities.items():
             self.set_probability(name, prob)
