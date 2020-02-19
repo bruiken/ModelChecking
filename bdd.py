@@ -54,10 +54,15 @@ class BDDConstructor:
         This function works depth first.
         """
         self.fault_tree.set_states(state)
-        if self.fault_tree.apply() or not variable_ordering:
-            return LeafNode(self.fault_tree.apply())
+        fault_tree_holds = self.fault_tree.apply()
+        if fault_tree_holds or not variable_ordering:
+            return LeafNode(fault_tree_holds)
         else:
-            return self.construct_node(variable_ordering[0], variable_ordering[1:], state)
+            return self.construct_node(
+                variable_ordering[0],
+                variable_ordering[1:],
+                state
+            )
 
     def construct_node(self, variable, variable_ordering, state):
         """
