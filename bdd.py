@@ -11,6 +11,13 @@ class BasicEventNode:
         self.node_false = node_false
         self.name = name
 
+    def __str__(self):
+        return '{}: TRUE -> ({}) FALSE -> ({})'.format(
+            self.name,
+            str(self.node_true),
+            str(self.node_false)
+        )
+
 
 class LeafNode:
     """
@@ -23,6 +30,9 @@ class LeafNode:
         True or False.
         """
         self.value = value
+
+    def __str__(self):
+        return str(self.value)
 
 
 class BDDConstructor:
