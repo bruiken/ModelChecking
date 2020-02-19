@@ -40,8 +40,7 @@ class RandomOrdering(Ordering):
 
     def order_variables(self):
         """
-
-        :return:
+        Order the variables randomly and return the ordering.
         """
         ordering = list(self.fault_tree.get_basic_events().keys())
         shuffle(ordering)
