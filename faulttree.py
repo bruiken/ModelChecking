@@ -315,3 +315,9 @@ class FaultTree:
         if name in self.basic_events:
             return self.basic_events[name]
         return None
+
+    def get_basic_events(self):
+        """
+        Returns the basic events of a fault tree as a dictionary.
+        """
+        return self.basic_events

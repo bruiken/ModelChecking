@@ -82,7 +82,14 @@ class BDDConstructor:
         """
         self.fault_tree = fault_tree
 
-    def construct_bdd(self, variable_ordering, state):
+    def construct_bdd(self, ordering):
+        var_ordering = ordering.order_variables(self.fault_tree)
+        return self._construct_bdd(
+            var_ordering,
+            self.fault_tree.get_false_state()
+        )
+
+    def _construct_bdd(self, variable_ordering, state):
         """
         The construct_bdd function takes the remaining variable
         ordering and the current state to create a new layer
@@ -94,21 +101,21 @@ class BDDConstructor:
         if fault_tree_holds or not variable_ordering:
             return LeafNode(fault_tree_holds)
         else:
-            return self.construct_node(
+            return self._construct_node(
                 variable_ordering[0],
                 variable_ordering[1:],
                 state
             )
 
-    def construct_node(self, variable, variable_ordering, state):
+    def _construct_node(self, variable, variable_ordering, state):
         """
         Construct_node is a helper function to create the entire BDD.
         It constructs a non-leaf-node.
         """
         state[variable] = True
-        true_node = self.construct_bdd(variable_ordering, state)
+        true_node = self._construct_bdd(variable_ordering, state)
         state[variable] = False
-        false_node = self.construct_bdd(variable_ordering, state)
+        false_node = self._construct_bdd(variable_ordering, state)
         return BasicEventNode(
             true_node,
             false_node,
