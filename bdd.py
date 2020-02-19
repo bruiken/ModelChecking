@@ -2,6 +2,7 @@ class BasicEventNode:
     """
     Node for a BDD which is not a leaf node.
     """
+    
     def __init__(self, node_true, node_false, name):
         """
         BasicEventNode constructor, takes a node for the "true"
@@ -24,6 +25,7 @@ class LeafNode:
     LeafNodes are for leaf nodes in BDDs. They can either be True
     or False.
     """
+
     def __init__(self, value):
         """
         Constructor for a LeafNode. Takes a value which can be
@@ -39,6 +41,7 @@ class BDDConstructor:
     """
     The BDDConstructor can translate a Fault Tree into a BDD.
     """
+
     def __init__(self, fault_tree):
         """
         Constructor for the BDDConstructor. Takes as an argument
