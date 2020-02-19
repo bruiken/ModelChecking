@@ -18,7 +18,7 @@ class Gate:
         self.gate_type = gate_type
         self.input_gates = input_gates
 
-    def apply(self, print_trace=False):
+    def apply(self, print_trace):
         """
         The base implementation for apply.
         Gets the operator of the current gate and applies it on
@@ -28,7 +28,7 @@ class Gate:
         if print_trace:
             print('apply {}'.format(self.name))
         op = self.operation()
-        result = op(map(lambda x: x.apply(), self.input_gates))
+        result = op(map(lambda x: x.apply(print_trace), self.input_gates))
         return result
 
     def operation(self):
