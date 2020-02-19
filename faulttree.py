@@ -1,4 +1,5 @@
 from itertools import islice
+from fractions import Fraction
 
 
 class Gate:
@@ -40,6 +41,12 @@ class Gate:
         """
         return lambda _: True
 
+    def get_name(self):
+        """
+        Returns the name of the gate.
+        """
+        return self.name
+
 
 class BasicEvent(Gate):
     """
@@ -47,16 +54,20 @@ class BasicEvent(Gate):
     a Gate.
     """
 
-    def __init__(self, name, initial_state=False):
+    def __init__(self, name, initial_state=False, initial_probability=0.):
         """
         Constructor for a BasicEvent. This calls the
         constructor for the super with an empty set of empty
         child gates.
         :param name: Name of the BasicEvent.
         :param initial_state: Initial state of the BasicEvent.
+        :param initial_probability: Initial probability of the
+               BasicEvent.
         """
         super().__init__('BASIC', name, [])
         self.state = initial_state
+        self.probability = None
+        self.set_probability(initial_probability)
 
     def operation(self):
         """
@@ -72,6 +83,20 @@ class BasicEvent(Gate):
         :param state: The new state, either True or False.
         """
         self.state = state
+
+    def set_probability(self, prob):
+        """
+        Set the probability of a BasicEvent.
+        :param prob: The new probability.
+        """
+        self.probability = Fraction(str(prob))
+
+    def get_probability(self):
+        """
+        Returns the probability of the basic event.
+        Note that this is an instance of Fraction.
+        """
+        return self.probability
 
 
 class AndGate(Gate):
@@ -243,6 +268,27 @@ class FaultTree:
         for name, state in states.items():
             self.set_state(name, state)
 
+    def set_probability(self, name, prob):
+        """
+        Sets the probability of some basic event to the given
+        value.
+        :param name: The name of the basic event.
+        :param prob: The new probability for the given event.
+        """
+        if name in self.basic_events:
+            self.basic_events[name].set_probability(prob)
+
+    def set_probabilities(self, probabilities):
+        """
+        Sets multiple probabilities of basic events at once.
+        Uses the set_probability function multiple times.
+        The input should be a dictionary keyed on the names
+        of the basic events and valued with their
+        probabilities.
+        """
+        for name, prob in probabilities.items():
+            self.set_probability(name, prob)
+
     def apply(self, print_trace=False):
         """
         Apply the current state on the Gate of the system.
@@ -255,3 +301,12 @@ class FaultTree:
         Get the state where all basic events are set to False.
         """
         return {x: False for x in self.basic_events.keys()}
+
+    def get_basic_event(self, name):
+        """
+        Returns the basic event with the given name or None if
+        it does not exist.
+        """
+        if name in self.basic_events:
+            return self.basic_events[name]
+        return None
