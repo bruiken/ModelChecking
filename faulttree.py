@@ -37,7 +37,6 @@ class Gate:
         This function should take a list of Boolean values
         and produce a Boolean value as result.
         Must be overridden.
-        :return:
         """
         return lambda _: True
 
@@ -120,7 +119,7 @@ class OrGate(Gate):
 
 class VotGate(Gate):
     """
-    A VorGate is a gate that fails when at least k/n of its
+    A VotGate is a gate that fails when at least k/n of its
     children fail.
     """
 
@@ -140,7 +139,10 @@ class VotGate(Gate):
         True is returned.
         https://stackoverflow.com/a/40351371
         """
-        return lambda x: next(islice((y for y in x if y), self.fail_treshold - 1, None), False)
+        return lambda x: next(
+            islice((y for y in x if y), self.fail_treshold - 1, None),
+            False
+        )
 
 
 class NotGate(Gate):
@@ -208,7 +210,7 @@ class FaultTree:
         Apply the current state on the Gate of the system.
         Returns the returning value.
         """
-        return self.system.apply()
+        return self.system.apply(print_trace)
 
     def get_false_state(self):
         """

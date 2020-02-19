@@ -2,7 +2,7 @@ class BasicEventNode:
     """
     Node for a BDD which is not a leaf node.
     """
-    
+
     def __init__(self, node_true, node_false, name):
         """
         BasicEventNode constructor, takes a node for the "true"
