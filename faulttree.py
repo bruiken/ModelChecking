@@ -205,7 +205,7 @@ class FaultTree:
         for name, state in states.items():
             self.set_state(name, state)
 
-    def apply(self):
+    def apply(self, print_trace=False):
         """
         Apply the current state on the Gate of the system.
         Returns the returning value.
