@@ -1,8 +1,12 @@
+from itertools import islice
+
+
 class Gate:
     """
     Abstract class for a Gate.
     Implementations should implement the "operation" function.
     """
+
     def __init__(self, gate_type, name, input_gates):
         """
         Constructor for a Gate
@@ -43,6 +47,7 @@ class BasicEvent(Gate):
     A BasicEvent is a leaf node in a fault tree. It is also
     a Gate.
     """
+
     def __init__(self, name, initial_state=False):
         """
         Constructor for a BasicEvent. This calls the
@@ -74,6 +79,7 @@ class AndGate(Gate):
     """
     An AndGate is the representation for the logical AND-gate.
     """
+
     def __init__(self, name, input_gates):
         """
         The constructor for an AndGate.
@@ -94,6 +100,7 @@ class OrGate(Gate):
     """
     An OrGate is the representation for the logical OR-gate.
     """
+
     def __init__(self, name, input_gates):
         """
         The constructor for an OrGate.
@@ -111,12 +118,62 @@ class OrGate(Gate):
         return any
 
 
+class VotGate(Gate):
+    """
+    A VorGate is a gate that fails when at least k/n of its
+    children fail.
+    """
+
+    def __init__(self, name, fail_treshold, input_gates):
+        """
+        The constructor for a VotGate.
+        :param name: The name of the VotGate.
+        :param input_gates: The child Gates.
+        """
+        super().__init__('VOT', name, input_gates)
+        self.fail_treshold = fail_treshold
+
+    def operation(self):
+        """
+        The operation for an VotGate is counting how many children
+        are True, and if this number exceeds (or equals) the treshold,
+        True is returned.
+        https://stackoverflow.com/a/40351371
+        """
+        return lambda x: next(islice((y for y in x if y), self.fail_treshold - 1, None), False)
+
+
+class NotGate(Gate):
+    """
+    A NotGate is a representation for a logical NOT-gate.
+    It takes 1 and at most 1 input gate.
+    """
+
+    def __init__(self, name, input_gate):
+        """
+        The constructor for a NotGate.
+        :param name: The name of the NotGate.
+        :param input_gate: The child Gate of the NotGate.
+        """
+        super().__init__('NOT', name, [input_gate])
+
+    def operation(self):
+        """
+        The operation for a NotGate inverts the result of its child.
+        Note that there is a list constructor, this is to be able to use
+        the subscript (the argument of the function will be a generator).
+        :return:
+        """
+        return lambda x: not list(x)[0]
+
+
 class FaultTree:
     """
     The FaultTree class defines a complete FaultTree.
     It has a Gate as its system, a number of basic events
     and a name.
     """
+
     def __init__(self, name, basic_events, system):
         """
         The constructor for a FaultTree.
