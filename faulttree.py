@@ -14,13 +14,15 @@ class Gate:
         self.gate_type = gate_type
         self.input_gates = input_gates
 
-    def apply(self):
+    def apply(self, print_trace=False):
         """
         The base implementation for apply.
         Gets the operator of the current gate and applies it on
         the map of the apply function on the child gates.
         :return: Whether or not the Gate is satisfied.
         """
+        if print_trace:
+            print('apply {}'.format(self.name))
         op = self.operation()
         result = op(map(lambda x: x.apply(), self.input_gates))
         return result
