@@ -1,5 +1,6 @@
 from itertools import islice
 from fractions import Fraction
+import collections
 
 
 class Gate:
@@ -8,22 +9,24 @@ class Gate:
     Implementations should implement the "operation" function.
     """
 
-    def __init__(self, gate_type, name, input_gates):
+    def __init__(self, gate_type, name, input_gates, image_path=None):
         """
-        Constructor for a Gate
-        :param gate_type: type of the gate
-        :param name: name for the gate
-        :param input_gates: a list of Gates
+        Constructor for a Gate.
+        :param gate_type: type of the gate.
+        :param name: name for the gate.
+        :param input_gates: a list of Gates.
+        :param image_path: the path to he image representing the gate.
         """
         self.name = name
         self.gate_type = gate_type
         self.input_gates = input_gates
+        self.image_path = image_path
 
     def apply(self, print_trace):
         """
         The base implementation for apply.
-        Gets the operator of the current gate and applies it on
-        the map of the apply function on the child gates.
+        Gets the operator of the current gate and applies it on the map of
+        the apply function on the child gates.
         :return: Whether or not the Gate is satisfied.
         """
         if print_trace:
@@ -35,8 +38,8 @@ class Gate:
     def operation(self):
         """
         The base implementation for the operation function.
-        This function should take a list of Boolean values
-        and produce a Boolean value as result.
+        This function should take a list of Boolean values and produce a
+        Boolean value as result.
         Must be overridden.
         """
         return lambda _: True
@@ -47,18 +50,28 @@ class Gate:
         """
         return self.name
 
+    def get_image_path(self):
+        """
+        Returns the path to the image representing the gate.
+        """
+        return self.image_path
+
+    def get_input_gates(self):
+        """
+        Returns the input gates of the Gate.
+        """
+        return self.input_gates
+
 
 class BasicEvent(Gate):
     """
-    A BasicEvent is a leaf node in a fault tree. It is also
-    a Gate.
+    A BasicEvent is a leaf node in a fault tree. It is also a Gate.
     """
 
     def __init__(self, name, initial_state=False, initial_probability=0.):
         """
-        Constructor for a BasicEvent. This calls the
-        constructor for the super with an empty set of empty
-        child gates.
+        Constructor for a BasicEvent. This calls the constructor for the
+        super with an empty set of empty child gates.
         :param name: Name of the BasicEvent.
         :param initial_state: Initial state of the BasicEvent.
         :param initial_probability: Initial probability of the BasicEvent.
@@ -72,15 +85,14 @@ class BasicEvent(Gate):
 
     def operation(self):
         """
-        The operation for a BasicEvent ignores the input and
-        returns the state of it.
+        The operation for a BasicEvent ignores the input and returns the
+        state of it.
         """
         return lambda _: self.state
 
     def set_state(self, state):
         """
-        Set the state of a BasicEvent, should be a boolean
-        value.
+        Set the state of a BasicEvent, should be a boolean value.
         :param state: The new state, either True or False.
         """
         self.state = state
@@ -88,8 +100,8 @@ class BasicEvent(Gate):
     def set_probability(self, prob):
         """
         Set the probability of a BasicEvent.
-        When supplying a fraction use a string ('1/7') or an
-        instance of the class Fraction.
+        When supplying a fraction use a string ('1/7') or an instance of
+        the class Fraction.
         :param prob: The new probability.
         """
         self.probability = Fraction(str(prob))
@@ -100,6 +112,12 @@ class BasicEvent(Gate):
         Note that this is an instance of Fraction.
         """
         return self.probability
+
+    def get_state(self):
+        """"
+        Returns the current state of the basic event.
+        """
+        return self.state
 
 
 class AndGate(Gate):
@@ -113,12 +131,12 @@ class AndGate(Gate):
         :param name: The name of the AndGate.
         :param input_gates: The child Gates.
         """
-        super().__init__('AND', name, input_gates)
+        super().__init__('AND', name, input_gates, './gates/andgate.png')
 
     def operation(self):
         """
-        The operation for an AndGate is the all function,
-        since all values should be True.
+        The operation for an AndGate is the all function, since all values
+        should be True.
         """
         return all
 
@@ -134,21 +152,19 @@ class OrGate(Gate):
         :param name: The name of the OrGate.
         :param input_gates: The child Gates.
         """
-        super().__init__('OR', name, input_gates)
+        super().__init__('OR', name, input_gates, 'gates/orgate.png')
 
     def operation(self):
         """
-        The operation for an OrGate is the any function,
-        since any of the values may be True for the whole
-        gate to be true.
+        The operation for an OrGate is the any function, since any of the
+        values may be True for the whole gate to be true.
         """
         return any
 
 
 class VotGate(Gate):
     """
-    A VotGate is a gate that fails when at least k/n of its
-    children fail.
+    A VotGate is a gate that fails when at least k/n of its children fail.
     """
 
     def __init__(self, name, fail_treshold, input_gates):
@@ -157,19 +173,26 @@ class VotGate(Gate):
         :param name: The name of the VotGate.
         :param input_gates: The child Gates.
         """
-        super().__init__('VOT', name, input_gates)
+        super().__init__('VOT', name, input_gates, './gates/votgate.png')
         self.fail_treshold = fail_treshold
 
     def operation(self):
         """
-        The operation for an VotGate is counting how many children
-        are True, and if this number exceeds (or equals) the treshold,
-        True is returned.
+        The operation for an VotGate is counting how many children are
+        True, and if this number exceeds (or equals) the treshold, True is
+        returned.
         https://stackoverflow.com/a/40351371
         """
         return lambda x: next(
             islice((y for y in x if y), self.fail_treshold - 1, None),
             False
+        )
+
+    def get_name(self):
+        return '{} ({}/{})'.format(
+            self.name,
+            self.fail_treshold,
+            len(self.input_gates)
         )
 
 
@@ -185,7 +208,7 @@ class NotGate(Gate):
         :param name: The name of the NotGate.
         :param input_gate: The child Gate of the NotGate.
         """
-        super().__init__('NOT', name, [input_gate])
+        super().__init__('NOT', name, [input_gate], './gates/notgate.png')
 
     def operation(self):
         """
@@ -208,14 +231,13 @@ class XorGate(Gate):
         :param name: The name of the XorGate.
         :param input_gates: The input gates.
         """
-        super().__init__('XOR', name, input_gates)
+        super().__init__('XOR', name, input_gates, './gates/xorgate.png')
 
     @staticmethod
     def xor_check(results):
         """
-        Helper function to determine the result of the XOR-
-        gate. Returns True iff exactly input of the gates is
-        True.
+        Helper function to determine the result of the XOR-gate. Returns
+        True iff exactly input of the gates is True.
         """
         found = False
         for result in results:
@@ -228,8 +250,7 @@ class XorGate(Gate):
 
     def operation(self):
         """
-        The operation for the XorGate. Uses the helper function
-        xor_check.
+        The operation for the XorGate. Uses the helper function xor_check.
         :return:
         """
         return self.xor_check
@@ -238,8 +259,7 @@ class XorGate(Gate):
 class FaultTree:
     """
     The FaultTree class defines a complete FaultTree.
-    It has a Gate as its system, a number of basic events
-    and a name.
+    It has a Gate as its system, a number of basic events and a name.
     """
 
     def __init__(self, name, basic_events, system):
@@ -252,6 +272,7 @@ class FaultTree:
         self.name = name,
         self.basic_events = basic_events
         self.system = system
+        self.gates = {x.get_name(): x for x in self._construct_gates()}
 
     def set_state(self, name, state):
         """
@@ -265,17 +286,17 @@ class FaultTree:
     def set_states(self, states):
         """
         Sets the states for many basic events at once.
-        The input should be a dictionary keyed on the names of
-        the basic events, values are boolean.
+        The input should be a dictionary keyed on the names of the basic
+        events, values are boolean.
         """
         for name, state in states.items():
             self.set_state(name, state)
 
     def set_probability(self, name, prob):
         """
-        Sets the probability of some basic event to the given
-        value. When supplying a fraction use a string ('1/7') or an
-        instance of the class Fraction.
+        Sets the probability of some basic event to the given value. When
+        supplying a fraction use a string ('1/7') or an instance of the
+        class Fraction.
         :param name: The name of the basic event.
         :param prob: The new probability for the given event.
         """
@@ -286,10 +307,10 @@ class FaultTree:
         """
         Sets multiple probabilities of basic events at once.
         Uses the set_probability function multiple times.
-        The input should be a dictionary keyed on the names
-        of the basic events and valued with their
-        probabilities. When supplying a fraction use a string
-        ('1/7') or an instance of the class Fraction.
+        The input should be a dictionary keyed on the names of the basic
+        events and valued with their probabilities. When supplying a
+        fraction use a string ('1/7') or an instance of the class
+        Fraction.
         """
         for name, prob in probabilities.items():
             self.set_probability(name, prob)
@@ -309,9 +330,53 @@ class FaultTree:
 
     def get_basic_event(self, name):
         """
-        Returns the basic event with the given name or None if
-        it does not exist.
+        Returns the basic event with the given name or None if it does not
+        exist.
         """
         if name in self.basic_events:
             return self.basic_events[name]
         return None
+
+    def _construct_gates(self):
+        """
+        Constructs the set of all Gates in the system and returns it.
+        """
+        def gates(x):
+            return [x.input_gates] + \
+                   [gates(y) for y in x.input_gates if x.input_gates]
+
+        return list(flatten(gates(self.system))) + [self.system]
+
+    def get_gate(self, name):
+        """
+        Returns the first gate in the system matching the given name or
+        None if there is no matching gate.
+        """
+        if name in self.gates:
+            return self.gates[name]
+        return None
+
+    def get_basic_events(self):
+        """
+        Returns the dictionary of basic events.
+        """
+        return self.basic_events
+
+    def get_system(self):
+        """
+        Returns the system of the Fault Tree.
+        """
+        return self.system
+
+
+def flatten(l):
+    """
+    Flattens a list of elements. This list can contain any depth of lists,
+    and it will be converted to a 1 dimensional list.
+    """
+    for el in l:
+        if isinstance(el, collections.Iterable) and \
+                not isinstance(el, (str, bytes)):
+            yield from flatten(el)
+        else:
+            yield el
