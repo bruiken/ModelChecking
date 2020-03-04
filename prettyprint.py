@@ -82,10 +82,13 @@ class PrettyPrintFaultTree(_PrettyPrint):
         printed upside down.
         :param gate: The gate to add to the graph.
         """
-        self.graph.add_node(gate.get_name())
+        self.graph.add_node(gate.get_unique_index())
         for child_gate in gate.get_input_gates():
             self._add_nodes(child_gate)
-            self.graph.add_edge(gate.get_name(), child_gate.get_name())
+            self.graph.add_edge(
+                gate.get_unique_index(),
+                child_gate.get_unique_index()
+            )
 
     def _draw_graph(self):
         """
@@ -133,7 +136,8 @@ class PrettyPrintFaultTree(_PrettyPrint):
         label_axis.set_zorder(10)
         plt.gcf().add_axes(label_axis)
         for node in self.graph.nodes:
-            label_axis.text(*pos[node], node, ha='center', va='center',
+            name = self.fault_tree.get_gate(node).get_name()
+            label_axis.text(*pos[node], name, ha='center', va='center',
                             transform=label_axis.transData, weight='bold',
                             color=(.3, .3, .3), fontsize=self.font_size)
 
@@ -157,11 +161,11 @@ class PrettyPrintFaultTree(_PrettyPrint):
         """
         nodes_on, nodes_off = [], []
         for basic_event in self.fault_tree.get_basic_events().values():
-            if self.fault_tree.get_gate(basic_event.get_name()):
+            if self.fault_tree.get_gate(basic_event.get_unique_index()):
                 if basic_event.get_state():
-                    nodes_on.append(basic_event.get_name())
+                    nodes_on.append(basic_event.get_unique_index())
                 else:
-                    nodes_off.append(basic_event.get_name())
+                    nodes_off.append(basic_event.get_unique_index())
         nx.draw_networkx_nodes(self.graph, pos, nodes_on, node_color='g')
         nx.draw_networkx_nodes(self.graph, pos, nodes_off, node_color='r')
 
@@ -173,7 +177,7 @@ class PrettyPrintFaultTree(_PrettyPrint):
         :param pos: The positions for all the nodes.
         """
         basic_events = list(map(
-            lambda x: x.get_name(),
+            lambda x: x.get_unique_index(),
             self.fault_tree.get_basic_events().values()
         ))
         nodes = []

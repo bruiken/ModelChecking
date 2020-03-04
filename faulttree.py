@@ -9,6 +9,8 @@ class Gate:
     Implementations should implement the "operation" function.
     """
 
+    index = 0   # unique index
+
     def __init__(self, gate_type, name, input_gates, image_path=None):
         """
         Constructor for a Gate.
@@ -21,6 +23,8 @@ class Gate:
         self.gate_type = gate_type
         self.input_gates = input_gates
         self.image_path = image_path
+        self.idx = Gate.index
+        Gate.index += 1
 
     def apply(self, print_trace):
         """
@@ -61,6 +65,12 @@ class Gate:
         Returns the input gates of the Gate.
         """
         return self.input_gates
+
+    def get_unique_index(self):
+        """
+        Get the unique index of the gate.
+        """
+        return self.idx
 
 
 class BasicEvent(Gate):
@@ -272,7 +282,9 @@ class FaultTree:
         self.name = name,
         self.basic_events = basic_events
         self.system = system
-        self.gates = {x.get_name(): x for x in self._construct_gates()}
+        self.gates = {
+            x.get_unique_index(): x for x in self._construct_gates()
+        }
 
     def set_state(self, name, state):
         """
@@ -347,13 +359,13 @@ class FaultTree:
 
         return list(flatten(gates(self.system))) + [self.system]
 
-    def get_gate(self, name):
+    def get_gate(self, index):
         """
-        Returns the first gate in the system matching the given name or
+        Returns the first gate in the system matching the given index or
         None if there is no matching gate.
         """
-        if name in self.gates:
-            return self.gates[name]
+        if index in self.gates:
+            return self.gates[index]
         return None
 
     def get_basic_events(self):
