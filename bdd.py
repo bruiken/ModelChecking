@@ -3,11 +3,36 @@ class Node:
     The node class is the abstract class used by BDD nodes.
     """
 
+    index = 0  # index to uniquely name each node
+
+    def __init__(self):
+        self.idx = Node.index
+        Node.index += 1
+
     def calculate_probability(self):
         """
         Calculates the probability fo the given node.
         """
         return 0
+
+    def has_children(self):
+        """
+        Returns whether or not the node has child nodes.
+        """
+        return False
+
+    def get_name(self):
+        """
+        Get the name of the node.
+        """
+        return None
+
+    def get_unique_name(self):
+        """
+        Get the unique name for this node, by default this corresponds to
+        the unique index given to it.
+        """
+        return self.idx
 
 
 class BasicEventNode(Node):
@@ -20,6 +45,7 @@ class BasicEventNode(Node):
         BasicEventNode constructor, takes a node for the "true"
         path, a node for the "false" path and a name.
         """
+        super().__init__()
         self.node_true = node_true
         self.node_false = node_false
         self.basic_event = basic_event
@@ -37,12 +63,36 @@ class BasicEventNode(Node):
         return false_prob * (1 - self.basic_event.get_probability()) + \
             true_prob * self.basic_event.get_probability()
 
-    def __str__(self):
-        return '{}: TRUE -> ({}) FALSE -> ({})'.format(
-            self.basic_event.get_name(),
-            str(self.node_true),
-            str(self.node_false)
-        )
+    def has_children(self):
+        """
+        Returns True as a basic event does have child nodes.
+        """
+        return True
+
+    def get_basic_event(self):
+        """
+        Gets the BasicEvent class that represents the basic event in the
+        node.
+        """
+        return self.basic_event
+
+    def get_true_node(self):
+        """
+        Returns the node that is reached when taking the "True" path.
+        """
+        return self.node_true
+
+    def get_false_node(self):
+        """
+        Returns the node that is reached when taking the "False" path.
+        """
+        return self.node_false
+
+    def get_name(self):
+        """
+        Returns the name of the node.
+        """
+        return self.basic_event.get_name()
 
 
 class LeafNode(Node):
@@ -56,6 +106,7 @@ class LeafNode(Node):
         Constructor for a LeafNode. Takes a value which can be
         True or False.
         """
+        super().__init__()
         self.value = value
 
     def calculate_probability(self):
@@ -66,8 +117,14 @@ class LeafNode(Node):
         """
         return int(self.value)
 
-    def __str__(self):
-        return str(self.value)
+    def get_name(self):
+        return str(int(self.value))
+
+    def get_value(self):
+        return self.value
+
+    def get_unique_name(self):
+        return self.value
 
 
 class BDDConstructor:
@@ -83,6 +140,10 @@ class BDDConstructor:
         self.fault_tree = fault_tree
 
     def construct_bdd(self, ordering):
+        """
+        Constructs a BDD with the given ordering.
+        :return the created system.
+        """
         var_ordering = ordering.order_variables(self.fault_tree)
         return self._construct_bdd(
             var_ordering,
@@ -143,3 +204,9 @@ class BDD:
         probabilities stored in the basic events.
         """
         return self.system.calculate_probability()
+
+    def get_system(self):
+        """
+        Get the entire system of the BDD.
+        """
+        return self.system
