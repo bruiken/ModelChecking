@@ -6,6 +6,10 @@ class Node:
     index = 0  # index to uniquely name each node
 
     def __init__(self):
+        """
+        Initialiser for a Node, this just sets the unique index and then
+        increases the counter for the unique indices.
+        """
         self.idx = Node.index
         Node.index += 1
 
@@ -33,6 +37,14 @@ class Node:
         the unique index given to it.
         """
         return self.idx
+
+    def get_leaf_nodes(self):
+        """
+        Function that gets the number of leaf nodes reachable from the
+        current node.
+        Should return a set of leaf nodes.
+        """
+        pass
 
 
 class BasicEventNode(Node):
@@ -94,6 +106,19 @@ class BasicEventNode(Node):
         """
         return self.basic_event.get_name()
 
+    def get_leaf_nodes(self):
+        """
+        Get the leaf nodes of a BasicEventNode. We first take the leaf
+        nodes from the "true" node. If there is only one element in it,
+        we have to look into the other node as well, as there might be
+        a different leaf node that can be reached in there.
+        :return: A set of leaf nodes reachable from this node.
+        """
+        leaves = self.node_true.get_leaf_nodes()
+        if len(leaves) == 1:
+            leaves = leaves.union(self.node_false.get_leaf_nodes())
+        return leaves
+
 
 class LeafNode(Node):
     """
@@ -118,13 +143,31 @@ class LeafNode(Node):
         return int(self.value)
 
     def get_name(self):
+        """
+        Get the name of the LeafNode, which is either the string "True" or
+        "False".
+        """
         return str(int(self.value))
 
     def get_value(self):
+        """
+        Get the value of the LeafNode. Which is either True or False.
+        """
         return self.value
 
     def get_unique_name(self):
+        """
+        Get the unique name of the leaf node, which is its value.
+        """
         return self.value
+
+    def get_leaf_nodes(self):
+        """
+        Get the leaf nodes of the leaf node, this is just a singleton set
+        with its value.
+        :return:
+        """
+        return {self.value}
 
 
 class BDDConstructor:
@@ -139,16 +182,23 @@ class BDDConstructor:
         """
         self.fault_tree = fault_tree
 
-    def construct_bdd(self, ordering):
+    def construct_bdd(self, ordering, minimise=True):
         """
         Constructs a BDD with the given ordering.
-        :return the created system.
+        :param ordering: The ordering to use for the construction.
+        :param minimise: Whether or not to minimise the BDD after
+                         construction.
+        :return: the created system.
         """
         var_ordering = ordering.order_variables(self.fault_tree)
-        return self._construct_bdd(
+        bdd = BDD(self._construct_bdd(
             var_ordering,
             self.fault_tree.get_false_state()
-        )
+        ))
+        if minimise:
+            return BDDMinimiser(bdd).minimise()
+        else:
+            return bdd
 
     def _construct_bdd(self, variable_ordering, state):
         """
@@ -210,3 +260,48 @@ class BDD:
         Get the entire system of the BDD.
         """
         return self.system
+
+
+class BDDMinimiser:
+    """
+    A BDDMinimiser can minimise a given BDD.
+    This means that unnecessary nodes and edges from an existing BDD will
+    be removed. This is done using the get_leaf_nodes() function defined
+    by Node instances.
+    """
+
+    def __init__(self, bdd):
+        """
+        Initialiser for a BDDMinimiser class. Takes as an argument the BDD
+        to minimise.
+        :param bdd: The BDD to minimise.
+        """
+        self.bdd = bdd
+
+    def minimise(self):
+        """
+        The minimise function minimises the BDD by removing unnecessary
+        nodes and edges.
+        :return: A new BDD consisting of new Nodes that is the minimised
+                 version of the old BDD.
+        """
+        return BDD(self._minimise(self.bdd.get_system()))
+
+    def _minimise(self, node):
+        """
+        This function actually does the minimising.
+        Finds out the leaf nodes of the given node, if this is only one
+        leaf node, then we can return just a new LeafNode. If there are
+        multiple leaf nodes, we have to create a new BasicEventNode with
+        the "true" and "false" nodes which are also minimised recursively.
+        :param node: The current node to minimise.
+        :return: A new instance of a Node.
+        """
+        leaves = node.get_leaf_nodes()
+        if len(leaves) == 1:
+            return LeafNode(leaves.pop())
+        else:
+            return BasicEventNode(
+                self._minimise(node.get_true_node()),
+                self._minimise(node.get_false_node()),
+                node.get_basic_event())
