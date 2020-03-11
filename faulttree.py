@@ -1,6 +1,7 @@
 from itertools import islice
 from fractions import Fraction
 import collections
+import re
 
 
 class Gate:
@@ -379,6 +380,46 @@ class FaultTree:
         Returns the system of the Fault Tree.
         """
         return self.system
+
+
+class _InputReader:
+    def __init__(self, file):
+        self.file = file
+        self.contents = self.get_contents()
+
+    def get_contents(self):
+        with open(self.file, 'r') as f:
+            return f.read()
+
+    def create_faulttree(self):
+        pass
+
+
+class GalileoReader(_InputReader):
+    def __init__(self, file):
+        super().__init__(file)
+
+    def create_faulttree(self):
+        for line in self.contents.split('\n'):
+            self.parse_line(line)
+
+    @staticmethod
+    def parse_line(line):
+        args = line.rstrip(';').split()
+        name = GalileoReader.read_name(args[0])
+        if len(args) > 1 and GalileoReader.is_gate(args[1]):
+
+    @staticmethod
+    def read_name(word):
+        if word.startswith('"'):
+            return word[1:-1]
+        return word
+
+
+    @staticmethod
+    def is_gate(gate):
+        return gate in ['and', 'or'] or re.match(r'^\d+of\d+$', gate)
+
 
 
 def flatten(l):
