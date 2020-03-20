@@ -236,7 +236,7 @@ class PrettyPrintBDD(_PrettyPrint):
     Uses networkx and pygraphviz.
     """
 
-    def __init__(self, bdd):
+    def __init__(self, bdd, multi_edge_radians=0.2):
         """
         Constructor for a PrettyPrintBDD class.
         :param bdd: The BDD to print.
@@ -244,6 +244,7 @@ class PrettyPrintBDD(_PrettyPrint):
         self.bdd = bdd
         self.graph = nx.MultiDiGraph()  # multiedges between nodes
         self.labels = dict()  # dictionary to store labels of nodes in
+        self.multi_edge_radians = multi_edge_radians
 
     def _pretty_print(self):
         """
@@ -347,10 +348,23 @@ class PrettyPrintBDD(_PrettyPrint):
                          'style': self._get_edge_style(edge)}
             if self._edge_is_multiedge(edge):
                 if self._get_edge_dashed(edge):
-                    edge_data['connectionstyle'] = 'arc3,rad=-0.3'
+                    edge_data['connectionstyle'] = \
+                        self._multiedge_style(True)
                 else:
-                    edge_data['connectionstyle'] = 'arc3,rad=0.3'
+                    edge_data['connectionstyle'] = \
+                        self._multiedge_style(False)
             nx.draw_networkx_edges(self.graph, pos, [edge], **edge_data)
+
+    def _multiedge_style(self, negative):
+        """
+        Return the connectionstyle property for a multiedge in the drawn
+        graph.
+        :param negative: If the angle should be negative
+        """
+        if not negative:
+            return 'arc3, rad={}'.format(self.multi_edge_radians)
+        else:
+            return 'arc3, rad=-{}'.format(self.multi_edge_radians)
 
     def _draw_labels(self, pos):
         """
