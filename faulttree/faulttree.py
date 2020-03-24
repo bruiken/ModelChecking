@@ -75,13 +75,13 @@ class FaultTree:
         """
         return {x: False for x in self.basic_events.keys()}
 
-    def get_basic_event(self, name):
+    def get_basic_event(self, key):
         """
-        Returns the basic event with the given name or None if it does not
+        Returns the basic event with the given key or None if it does not
         exist.
         """
-        if name in self.basic_events:
-            return self.basic_events[name]
+        if key in self.basic_events:
+            return self.basic_events[key]
         return None
 
     def _construct_gates(self):
