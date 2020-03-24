@@ -84,6 +84,19 @@ class FaultTree:
             return self.basic_events[key]
         return None
 
+    def get_basic_event_key(self, basic_event):
+        """
+        Returns the key the given BasicEvent.
+        :param basic_event: The BasicEvent to get the key of.
+        :return: The key of the BasicEvent or None, if it could not be
+                 found.
+        """
+        reverse_map = {v: k for k, v in self.basic_events.items()}
+        if basic_event in reverse_map:
+            return reverse_map[basic_event]
+        else:
+            return None
+
     def _construct_gates(self):
         """
         Constructs the set of all Gates in the system and returns it.
