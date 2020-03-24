@@ -8,48 +8,54 @@ class FaultTree:
     It has a Gate as its system, a number of basic events and a name.
     """
 
-    def __init__(self, name, basic_events, system):
+    def __init__(self, name, system):
         """
         The constructor for a FaultTree.
         :param name: The name of the FaultTree.
-        :param basic_events: The BasicEvents of the FaultTree.
         :param system: The Gate of the system.
         """
         self.name = name,
-        self.basic_events = basic_events
         self.system = system
         self.gates = {
             x.get_unique_index(): x for x in self._construct_gates()
         }
+        self.basic_events = self._get_basic_events()
 
-    def set_state(self, name, state):
+    def _get_basic_events(self):
+        result = {}
+        for k, v in self.gates.items():
+            if isinstance(v, BasicEvent):
+                result[k] = v
+        return result
+
+    def set_state(self, index, state):
         """
         Sets the state of some basic event to the given value.
-        :param name: The name of the basic event.
+        :param index: The index of the basic event.
         :param state: The new state for the given event.
         """
-        if name in self.basic_events:
-            self.basic_events[name].set_state(state)
+        if index in self.basic_events:
+            self.basic_events[index].set_state(state)
 
     def set_states(self, states):
         """
         Sets the states for many basic events at once.
-        The input should be a dictionary keyed on the names of the basic
+        The input should be a dictionary keyed on the indices of the basic
         events, values are boolean.
         """
-        for name, state in states.items():
-            self.set_state(name, state)
+        for index, state in states.items():
+            self.set_state(index, state)
 
-    def set_probability(self, name, prob):
+    def set_probability(self, index, prob):
         """
         Sets the probability of some basic event to the given value. When
         supplying a fraction use a string ('1/7') or an instance of the
         class Fraction.
-        :param name: The name of the basic event.
+        :param index: The index of the basic event.
         :param prob: The new probability for the given event.
         """
-        if name in self.basic_events:
-            self.basic_events[name].set_probability(prob)
+        if index in self.basic_events:
+            self.basic_events[index].set_probability(prob)
 
     def set_probabilities(self, probabilities):
         """
@@ -60,8 +66,8 @@ class FaultTree:
         fraction use a string ('1/7') or an instance of the class
         Fraction.
         """
-        for name, prob in probabilities.items():
-            self.set_probability(name, prob)
+        for index, prob in probabilities.items():
+            self.set_probability(index, prob)
 
     def apply(self, print_trace=False):
         """
@@ -76,27 +82,14 @@ class FaultTree:
         """
         return {x: False for x in self.basic_events.keys()}
 
-    def get_basic_event(self, key):
+    def get_basic_event(self, index):
         """
-        Returns the basic event with the given key or None if it does not
-        exist.
+        Returns the basic event with the given index or None if it does
+        not exist.
         """
-        if key in self.basic_events:
-            return self.basic_events[key]
+        if index in self.basic_events:
+            return self.basic_events[index]
         return None
-
-    def get_basic_event_key(self, basic_event):
-        """
-        Returns the key the given BasicEvent.
-        :param basic_event: The BasicEvent to get the key of.
-        :return: The key of the BasicEvent or None, if it could not be
-                 found.
-        """
-        reverse_map = {v: k for k, v in self.basic_events.items()}
-        if basic_event in reverse_map:
-            return reverse_map[basic_event]
-        else:
-            return None
 
     def _construct_gates(self):
         """

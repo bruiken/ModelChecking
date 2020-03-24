@@ -19,7 +19,6 @@ class GalileoReader(_InputReader):
         self.gates = {}
         self.toplevel = None
         self.created_gates = {}
-        self.basic_events = {}
 
     def create_faulttree(self):
         """
@@ -34,7 +33,7 @@ class GalileoReader(_InputReader):
             raise GalileoParseException('Toplevel is not defined')
         else:
             system = self.create_gates(self.toplevel)
-            return FaultTree(self.toplevel, self.basic_events, system)
+            return FaultTree(self.toplevel, system)
 
     def create_gates(self, gate_name):
         """
@@ -70,8 +69,6 @@ class GalileoReader(_InputReader):
             ))
         gate = construct(name, **options)
         self.created_gates[name] = gate
-        if isinstance(gate, BasicEvent):
-            self.basic_events[name] = gate
         return gate
 
     def parse_file(self):

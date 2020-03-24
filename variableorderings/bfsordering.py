@@ -26,26 +26,25 @@ class BFSOrdering(Ordering):
         :param fault_tree: The fault tree to order the BasicEvents of.
         :return: The ordering of the variables.
         """
-        self.parse_depth(fault_tree.get_system(), 0, fault_tree)
+        self.parse_depth(fault_tree.get_system(), 0)
         top_to_bot = sorted(self.depths.keys(),  # sort dictionary values
                             key=lambda x: self.depths[x])
         if self.bottom_to_top:
-            return reversed(top_to_bot)
+            return top_to_bot[::-1]
         else:
             return top_to_bot
 
-    def parse_depth(self, gate, depth, fault_tree):
+    def parse_depth(self, gate, depth):
         """
         Calculates the depths of the basic events in a recursive way.
         The depths are saved in a dictionary saved in the class (depths).
         :param gate: The gate currently parsing.
         :param depth: The current depth.
-        :param fault_tree: The fault tree to parse.
         """
-        name = gate.get_name()
+        index = gate.get_unique_index()
         if isinstance(gate, BasicEvent):
-            if name not in self.depths or depth < self.depths[name]:
-                self.depths[fault_tree.get_basic_event_key(gate)] = depth
+            if index not in self.depths or depth < self.depths[index]:
+                self.depths[gate.get_unique_index()] = depth
         else:
             for child in gate.get_input_gates():
-                self.parse_depth(child, depth+1, fault_tree)
+                self.parse_depth(child, depth+1)

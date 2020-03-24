@@ -1,4 +1,5 @@
 from bdd.nodes import LeafNode, BasicEventNode
+from bdd.bdd import BDD
 
 
 class BDDMinimiser:
