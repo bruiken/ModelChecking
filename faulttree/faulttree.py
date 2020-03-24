@@ -1,4 +1,5 @@
 import collections
+from faulttree.gates import BasicEvent
 
 
 class FaultTree:
@@ -75,14 +76,27 @@ class FaultTree:
         """
         return {x: False for x in self.basic_events.keys()}
 
-    def get_basic_event(self, name):
+    def get_basic_event(self, key):
         """
-        Returns the basic event with the given name or None if it does not
+        Returns the basic event with the given key or None if it does not
         exist.
         """
-        if name in self.basic_events:
-            return self.basic_events[name]
+        if key in self.basic_events:
+            return self.basic_events[key]
         return None
+
+    def get_basic_event_key(self, basic_event):
+        """
+        Returns the key the given BasicEvent.
+        :param basic_event: The BasicEvent to get the key of.
+        :return: The key of the BasicEvent or None, if it could not be
+                 found.
+        """
+        reverse_map = {v: k for k, v in self.basic_events.items()}
+        if basic_event in reverse_map:
+            return reverse_map[basic_event]
+        else:
+            return None
 
     def _construct_gates(self):
         """
@@ -114,6 +128,26 @@ class FaultTree:
         Returns the system of the Fault Tree.
         """
         return self.system
+
+    def max_depth(self):
+        """
+        Gets the maximum depth of the system.
+        :return: The height of the system.
+        """
+        return self._max_depth(self.system, 0)
+
+    def _max_depth(self, gate, depth):
+        """
+        Calculates the max depth of the given gate recursively).
+        :param gate: The current gate.
+        :param depth: The current depth.
+        :return: the maximum depth from the given gate.
+        """
+        if isinstance(gate, BasicEvent):
+            return depth
+        return max(
+            self._max_depth(x, depth+1) for x in gate.get_input_gates()
+        )
 
 
 def flatten(l):
