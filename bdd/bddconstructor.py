@@ -65,3 +65,14 @@ class BDDConstructor:
             false_node,
             self.fault_tree.get_basic_event(variable)
         )
+
+    def construct_bdd_test(self, variable_ordering):
+        """
+        Construct BDD with literal variable ordering (instead of an
+        Ordering class).
+        USE ONLY FOR TESTING!
+        :param variable_ordering:
+        :return: The constructed BDD.
+        """
+        false_state = self.fault_tree.get_false_state()
+        return BDD(self._construct_bdd(variable_ordering, false_state))

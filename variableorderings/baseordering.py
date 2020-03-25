@@ -17,3 +17,9 @@ class Ordering:
         variables of in the Fault Tree.
         """
         return list(fault_tree.get_basic_events().keys())
+
+    def get_ordering_type(self):
+        """
+        Returns the name of the ordering.
+        """
+        return self.ordering_type
