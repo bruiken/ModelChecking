@@ -86,7 +86,9 @@ class GalileoReader(_InputReader):
         :raises: GalileoParseException: If the file could not be parsed.
         """
         args = line.rstrip(';').split()
-        if args[0] == 'toplevel':
+        if len(args) == 0:
+            return
+        elif args[0] == 'toplevel':
             self.parse_toplevel(args)
         elif len(args) > 1 and GalileoReader.is_gate(args[1]):
             self.parse_gate(args)
