@@ -1,4 +1,4 @@
-# ModelChecking
+# FTtBDD
 
 ## Pretty Printing
 ### Required packages
