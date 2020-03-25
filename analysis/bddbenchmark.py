@@ -206,6 +206,7 @@ class _BDDBenchmarkGrapher:
         :param path: The path where the image should be saved.
         :param dpi: The dpi in which the image should be saved.
         """
+        plt.tight_layout()
         plt.savefig(path, dpi=dpi)
 
     def _load_data(self):
