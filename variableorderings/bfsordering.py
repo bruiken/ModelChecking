@@ -16,9 +16,15 @@ class BFSOrdering(Ordering):
         :param bottom_to_top: Whether to order from bottom to top
                               (the default) or top to bottom.
         """
-        super().__init__('Topological ordering')
+        super().__init__(BFSOrdering._get_name(bottom_to_top))
         self.bottom_to_top = bottom_to_top
         self.depths = {}
+
+    @staticmethod
+    def _get_name(bottom_to_top):
+        if bottom_to_top:
+            return 'BFS Ordering (Bottom to top)'
+        return 'BFS Ordering (Top to bottom)'
 
     def order_variables(self, fault_tree):
         """
