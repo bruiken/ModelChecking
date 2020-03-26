@@ -21,6 +21,7 @@ class _PrettyPrint:
         :param filename: The filename.
         :param dpi: The DPI of the drawing.
         """
+        plt.clf()
         self._pretty_print()
         plt.savefig(filename, dpi=dpi)
 
@@ -28,5 +29,6 @@ class _PrettyPrint:
         """
         Prints the current figure to a window.
         """
+        plt.clf()
         self._pretty_print()
         plt.show()
