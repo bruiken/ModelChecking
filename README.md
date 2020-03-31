@@ -1,5 +1,5 @@
-# FTtBDD
-FTtBDD stands for Fault Tree to BDD. It is a framework in which both fault trees and BDDs can be defined. To transform fault trees into BDDS we need variable orderings. The goal is to find an efficient variable ordering such that the construction of the BDD is as fast as possible (and the resulting BDD is as small as possible). Details on implementing new orderings or gates can be found in the documentation in the code. 
+# FT2BDD
+FT2BDD stands for Fault Tree to BDD. It is a framework in which both fault trees and BDDs can be defined. To transform fault trees into BDDS we need variable orderings. The goal is to find an efficient variable ordering such that the construction of the BDD is as fast as possible (and the resulting BDD is as small as possible). Details on implementing new orderings or gates can be found in the documentation in the code. 
 
 ## Fault Trees
 Fault trees are defined using gates (instances of the `Gate` class). The topmost gate defines the system, we also call it the system. When creating a new instance of the `FaultTree` class, this system should be given, as well as a name for the system. 
