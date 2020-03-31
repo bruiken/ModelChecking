@@ -15,7 +15,7 @@ class SubTreeComplexity(Ordering):
         Initialiser for the SubTreeComplexity ordering.
         """
         super().__init__('Sub-Tree Complexity')
-        self.complexities = {}
+        self._complexities = {}
 
     def order_variables(self, fault_tree):
         """
@@ -23,12 +23,13 @@ class SubTreeComplexity(Ordering):
         :param fault_tree: Fault tree to create the ordering for.
         :return: The ordering for the variables.
         """
-        self.score_events(fault_tree)
+        self._score_events(fault_tree)
         return sorted(  # inverse sort on the values of the dictionary
-            self.complexities.keys(), key=lambda x: -self.complexities[x]
+            self._complexities.keys(),
+            key=lambda x: -self._complexities[x]
         )
 
-    def score_events(self, fault_tree):
+    def _score_events(self, fault_tree):
         """
         Scores the basic events by their influence in the system.
         :param fault_tree: The fault tree to score the BasicEvents of.
@@ -38,12 +39,12 @@ class SubTreeComplexity(Ordering):
             states = fault_tree.get_false_state()
             states[key] = True
             fault_tree.set_states(states)
-            self.complexities[key] = self.score_event(
+            self._complexities[key] = self._score_event(
                 fault_tree.get_system(),
                 max_depth
             )
 
-    def score_event(self, gate, score):
+    def _score_event(self, gate, score):
         """
         Score an individual BasicEvent.
         The score of a BasicEvent goes up by (max_depth - current_depth)
@@ -53,13 +54,13 @@ class SubTreeComplexity(Ordering):
         :param score: The current score.
         :return:
         """
-        gate_score = SubTreeComplexity.get_gate_score(gate, score)
+        gate_score = SubTreeComplexity._get_gate_score(gate, score)
         for child in gate.get_input_gates():
-            gate_score += self.score_event(child, score-1)
+            gate_score += self._score_event(child, score-1)
         return gate_score
 
     @staticmethod
-    def get_gate_score(gate, score):
+    def _get_gate_score(gate, score):
         """
         Get the score of an individual gate.
         :param gate: The gate to get the score of.

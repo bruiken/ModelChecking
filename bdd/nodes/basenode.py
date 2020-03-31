@@ -10,7 +10,7 @@ class Node:
         Initialiser for a Node, this just sets the unique index and then
         increases the counter for the unique indices.
         """
-        self.idx = Node.index
+        self._idx = Node.index
         Node.index += 1
 
     def calculate_probability(self):
@@ -36,7 +36,7 @@ class Node:
         Get the unique name for this node, by default this corresponds to
         the unique index given to it.
         """
-        return self.idx
+        return self._idx
 
     def get_leaf_nodes(self):
         """

@@ -10,7 +10,7 @@ except ImportError:
     plt = None
 
 
-class _BenchmarkResult:
+class BenchmarkResult:
     """
     The BenchmarkResult class is used to store the result of a benchmark.
     """
@@ -95,7 +95,7 @@ class BDDBenchmark:
         :param orderings: A list containing Ordering classes.
         """
         for ordering in orderings:
-            self.results[ordering] = _BenchmarkResult()
+            self.results[ordering] = BenchmarkResult()
             self._benchmark_ordering(ordering)
             self._benchmark_construction(ordering)
             self._benchmark_minimising(ordering)
@@ -173,11 +173,11 @@ class BDDBenchmark:
         :param path: The path to store the graph.
         :param dpi: The desired dpi of the image.
         """
-        grapher = _BDDBenchmarkGrapher(self.results, self.name)
+        grapher = BDDBenchmarkGrapher(self.results, self.name)
         grapher.save_figure(path, dpi)
 
 
-class _BDDBenchmarkGrapher:
+class BDDBenchmarkGrapher:
     """
     The BDDBenchmarkGrapher is used to graph the results from a
     BDDBenchmark class.
@@ -190,12 +190,12 @@ class _BDDBenchmarkGrapher:
         :param results: A result dictionary from the BDDBenchmark class.
         :param name: The name of the analysed fault tree.
         """
-        self.results = results
-        self.bdd_nodes, self.min_bdd_nodes = [], []
-        self.ord_times, self.con_times, self.min_times = [], [], []
-        self.xticks = []
-        self.indices = list(range(len(results)))
-        self.name = name
+        self._results = results
+        self._bdd_nodes, self.min_bdd_nodes = [], []
+        self._ord_times, self.con_times, self.min_times = [], [], []
+        self._xticks = []
+        self._indices = list(range(len(results)))
+        self._name = name
         self._load_data()
         self._draw_results()
 
@@ -214,11 +214,11 @@ class _BDDBenchmarkGrapher:
         Load the data from the results dictionary in lists to ease the
         plotting of the data later.
         """
-        for ordering, result in self.results.items():
-            self.xticks.append(ordering.get_ordering_type())
-            self.bdd_nodes.append(result.bdd_nodes)
+        for ordering, result in self._results.items():
+            self._xticks.append(ordering.get_ordering_type())
+            self._bdd_nodes.append(result.bdd_nodes)
             self.min_bdd_nodes.append(result.min_bdd_nodes)
-            self.ord_times.append(result.ordering_time)
+            self._ord_times.append(result.ordering_time)
             self.con_times.append(result.construction_time)
             self.min_times.append(result.minimising_time)
 
@@ -245,9 +245,9 @@ class _BDDBenchmarkGrapher:
         :param axes: The axes to draw the bars on.
         """
         axes.set_ylabel('Number of nodes')
-        axes.bar(self.indices, self.bdd_nodes, .25, align='center',
+        axes.bar(self._indices, self._bdd_nodes, .25, align='center',
                  label='Unminimised nodes')
-        axes.bar(self.indices, self.min_bdd_nodes, .25, align='edge',
+        axes.bar(self._indices, self.min_bdd_nodes, .25, align='edge',
                  label='Minimised nodes')
 
     def _draw_times_axes(self, axes):
@@ -260,11 +260,11 @@ class _BDDBenchmarkGrapher:
         :param axes: The axes to draw the indicators on.
         """
         axes.set_ylabel('Time (s)')
-        axes.plot(self.indices, self.ord_times, 'rx', alpha=.7, mew=5,
+        axes.plot(self._indices, self._ord_times, 'rx', alpha=.7, mew=5,
                   ms=10, label='Ordering time')
-        axes.plot(self.indices, self.con_times, 'co', alpha=.7, mew=5,
+        axes.plot(self._indices, self.con_times, 'co', alpha=.7, mew=5,
                   ms=10, label='Construction time')
-        axes.plot(self.indices, self.min_times, 'k+', alpha=.7, mew=5,
+        axes.plot(self._indices, self.min_times, 'k+', alpha=.7, mew=5,
                   ms=10, label='Minimising time')
 
     def _draw_ticks_title(self, axes):
@@ -273,8 +273,8 @@ class _BDDBenchmarkGrapher:
         :param axes: The axes to draw the ticks on.
         """
         axes.tick_params(axis='x', rotation=12)
-        plt.xticks(self.indices, self.xticks, rotation=45)
-        plt.title('Results for {}'.format(self.name))
+        plt.xticks(self._indices, self._xticks, rotation=45)
+        plt.title('Results for {}'.format(self._name))
 
     @staticmethod
     def _draw_legend(axes1, axes2):

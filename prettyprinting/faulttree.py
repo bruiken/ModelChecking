@@ -2,10 +2,10 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from networkx.drawing.nx_agraph import graphviz_layout
-from prettyprinting.baseprinter import _PrettyPrint
+from prettyprinting.baseprinter import PrettyPrint
 
 
-class PrettyPrintFaultTree(_PrettyPrint):
+class PrettyPrintFaultTree(PrettyPrint):
     """
     Pretty printer for fault trees.
     Prints the fault tree in a tree like structure, uses the images
@@ -23,10 +23,10 @@ class PrettyPrintFaultTree(_PrettyPrint):
         :param image_size: The image size (for the gates).
         :param font_size: Font size for the labels.
         """
-        self.fault_tree = fault_tree
-        self.graph = nx.DiGraph()  # using a DirectedGraph for a tree
-        self.image_size = image_size
-        self.font_size = font_size
+        self._fault_tree = fault_tree
+        self._graph = nx.DiGraph()  # using a DirectedGraph for a tree
+        self._image_size = image_size
+        self._font_size = font_size
 
     def _pretty_print(self):
         """
@@ -41,7 +41,7 @@ class PrettyPrintFaultTree(_PrettyPrint):
         Adds all the gates to the networkx graph structure.
         To do this, the add nodes function is called with the full system.
         """
-        self._add_nodes(self.fault_tree.get_system())
+        self._add_nodes(self._fault_tree.get_system())
 
     def _add_nodes(self, gate):
         """
@@ -52,10 +52,10 @@ class PrettyPrintFaultTree(_PrettyPrint):
         printed upside down.
         :param gate: The gate to add to the graph.
         """
-        self.graph.add_node(gate.get_unique_index())
+        self._graph.add_node(gate.get_unique_index())
         for child_gate in gate.get_input_gates():
             self._add_nodes(child_gate)
-            self.graph.add_edge(
+            self._graph.add_edge(
                 gate.get_unique_index(),
                 child_gate.get_unique_index()
             )
@@ -70,8 +70,8 @@ class PrettyPrintFaultTree(_PrettyPrint):
         The positions for all the nodes are calculated using
         graphviz_layout.
         """
-        pos = graphviz_layout(self.graph, prog='dot')
-        nx.draw(self.graph, pos, node_size=0, edgelist=[])
+        pos = graphviz_layout(self._graph, prog='dot')
+        nx.draw(self._graph, pos, node_size=0, edgelist=[])
         self._draw_edges(pos)
         self._draw_labels(pos)
         self._draw_nodes(pos)
@@ -84,14 +84,14 @@ class PrettyPrintFaultTree(_PrettyPrint):
         :param pos: The positions for all the nodes.
         """
         edges_on, edges_off = [], []
-        for source, dest in self.graph.edges():
-            if self.fault_tree.get_gate(dest).apply(False):
+        for source, dest in self._graph.edges():
+            if self._fault_tree.get_gate(dest).apply(False):
                 edges_on.append((source, dest))
             else:
                 edges_off.append((source, dest))
-        nx.draw_networkx_edges(self.graph, pos, edges_on, edge_color='g',
+        nx.draw_networkx_edges(self._graph, pos, edges_on, edge_color='g',
                                width=3, arrows=False)
-        nx.draw_networkx_edges(self.graph, pos, edges_off, edge_color='r',
+        nx.draw_networkx_edges(self._graph, pos, edges_off, edge_color='r',
                                width=3, arrows=False)
 
     def _draw_labels(self, pos):
@@ -105,11 +105,11 @@ class PrettyPrintFaultTree(_PrettyPrint):
         label_axis.set_axis_off()
         label_axis.set_zorder(10)
         plt.gcf().add_axes(label_axis)
-        for node in self.graph.nodes:
-            name = self.fault_tree.get_gate(node).get_name()
+        for node in self._graph.nodes:
+            name = self._fault_tree.get_gate(node).get_name()
             label_axis.text(*pos[node], name, ha='center', va='center',
                             transform=label_axis.transData, weight='bold',
-                            color=(.3, .3, .3), fontsize=self.font_size)
+                            color=(.3, .3, .3), fontsize=self._font_size)
 
     def _draw_nodes(self, pos):
         """
@@ -129,15 +129,15 @@ class PrettyPrintFaultTree(_PrettyPrint):
         or red if they are on or off.
         :param pos: The positions for all the nodes.
         """
-        nodes_on, nodes_off = [], []
-        for basic_event in self.fault_tree.get_basic_events().values():
-            if self.fault_tree.get_gate(basic_event.get_unique_index()):
+        node_on, node_off = [], []
+        for basic_event in self._fault_tree.get_basic_events().values():
+            if self._fault_tree.get_gate(basic_event.get_unique_index()):
                 if basic_event.get_state():
-                    nodes_on.append(basic_event.get_unique_index())
+                    node_on.append(basic_event.get_unique_index())
                 else:
-                    nodes_off.append(basic_event.get_unique_index())
-        nx.draw_networkx_nodes(self.graph, pos, nodes_on, node_color='g')
-        nx.draw_networkx_nodes(self.graph, pos, nodes_off, node_color='r')
+                    node_off.append(basic_event.get_unique_index())
+        nx.draw_networkx_nodes(self._graph, pos, node_on, node_color='g')
+        nx.draw_networkx_nodes(self._graph, pos, node_off, node_color='r')
 
     def _draw_non_basic_gates(self, pos):
         """
@@ -148,13 +148,13 @@ class PrettyPrintFaultTree(_PrettyPrint):
         """
         basic_events = list(map(
             lambda x: x.get_unique_index(),
-            self.fault_tree.get_basic_events().values()
+            self._fault_tree.get_basic_events().values()
         ))
         nodes = []
-        for node in self.graph.nodes:
+        for node in self._graph.nodes:
             if node not in basic_events:
                 nodes.append(node)
-        nx.draw_networkx_nodes(self.graph, pos, nodes, node_size=0)
+        nx.draw_networkx_nodes(self._graph, pos, nodes, node_size=0)
 
     def _draw_node_images(self, pos):
         """
@@ -162,8 +162,8 @@ class PrettyPrintFaultTree(_PrettyPrint):
         :param pos: The positions for all the nodes.
         """
         ax = plt.gca()
-        for node in self.graph.nodes:
-            img = self.fault_tree.get_gate(node).get_image_path()
+        for node in self._graph.nodes:
+            img = self._fault_tree.get_gate(node).get_image_path()
             if img:
                 self._draw_node_image(node, img, pos, ax)
 
@@ -176,8 +176,8 @@ class PrettyPrintFaultTree(_PrettyPrint):
         :param ax: The axes to draw the images on.
         """
         x, y = self._transform_coords(pos[node], ax)
-        a = plt.axes([x - self.image_size / 2., y - self.image_size / 2.,
-                      self.image_size, self.image_size])
+        a = plt.axes([x - self._image_size / 2, y - self._image_size / 2,
+                      self._image_size, self._image_size])
         a.axis('off')
         a.imshow(mpimg.imread(img))
 

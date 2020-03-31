@@ -10,17 +10,17 @@ class BDD:
         Node.
         :param system: The Node describing the BDD.
         """
-        self.system = system
+        self._system = system
 
     def calculate_probability(self):
         """
         Calculates the probability of the entire BDD using the
         probabilities stored in the basic events.
         """
-        return self.system.calculate_probability()
+        return self._system.calculate_probability()
 
     def get_system(self):
         """
         Get the entire system of the BDD.
         """
-        return self.system
+        return self._system

@@ -14,7 +14,7 @@ class VotGate(Gate):
         :param input_gates: The child Gates.
         """
         super().__init__('VOT', name, input_gates, './resources/votgate.png')
-        self.fail_treshold = fail_treshold
+        self._fail_treshold = fail_treshold
 
     def operation(self):
         """
@@ -24,13 +24,13 @@ class VotGate(Gate):
         https://stackoverflow.com/a/40351371
         """
         return lambda x: next(
-            islice((y for y in x if y), self.fail_treshold - 1, None),
+            islice((y for y in x if y), self._fail_treshold - 1, None),
             False
         )
 
     def get_name(self):
         return '{} ({}/{})'.format(
-            self.name,
-            self.fail_treshold,
-            len(self.input_gates)
+            self._name,
+            self._fail_treshold,
+            len(self._input_gates)
         )

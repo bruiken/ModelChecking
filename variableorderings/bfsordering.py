@@ -17,8 +17,8 @@ class BFSOrdering(Ordering):
                               (the default) or top to bottom.
         """
         super().__init__(BFSOrdering._get_name(bottom_to_top))
-        self.bottom_to_top = bottom_to_top
-        self.depths = {}
+        self._bottom_to_top = bottom_to_top
+        self._depths = {}
 
     @staticmethod
     def _get_name(bottom_to_top):
@@ -33,9 +33,9 @@ class BFSOrdering(Ordering):
         :return: The ordering of the variables.
         """
         self.parse_depth(fault_tree.get_system(), 0)
-        top_to_bot = sorted(self.depths.keys(),  # sort dictionary values
-                            key=lambda x: self.depths[x])
-        if self.bottom_to_top:
+        top_to_bot = sorted(self._depths.keys(),  # sort dictionary values
+                            key=lambda x: self._depths[x])
+        if self._bottom_to_top:
             return top_to_bot[::-1]
         else:
             return top_to_bot
@@ -49,8 +49,8 @@ class BFSOrdering(Ordering):
         """
         index = gate.get_unique_index()
         if isinstance(gate, BasicEvent):
-            if index not in self.depths or depth < self.depths[index]:
-                self.depths[gate.get_unique_index()] = depth
+            if index not in self._depths or depth < self._depths[index]:
+                self._depths[gate.get_unique_index()] = depth
         else:
             for child in gate.get_input_gates():
                 self.parse_depth(child, depth+1)

@@ -14,16 +14,16 @@ class FaultTree:
         :param name: The name of the FaultTree.
         :param system: The Gate of the system.
         """
-        self.name = name,
-        self.system = system
-        self.gates = {
+        self._name = name,
+        self._system = system
+        self._gates = {
             x.get_unique_index(): x for x in self._construct_gates()
         }
-        self.basic_events = self._get_basic_events()
+        self._basic_events = self._get_basic_events()
 
     def _get_basic_events(self):
         result = {}
-        for k, v in self.gates.items():
+        for k, v in self._gates.items():
             if isinstance(v, BasicEvent):
                 result[k] = v
         return result
@@ -34,8 +34,8 @@ class FaultTree:
         :param index: The index of the basic event.
         :param state: The new state for the given event.
         """
-        if index in self.basic_events:
-            self.basic_events[index].set_state(state)
+        if index in self._basic_events:
+            self._basic_events[index].set_state(state)
 
     def set_states(self, states):
         """
@@ -54,8 +54,8 @@ class FaultTree:
         :param index: The index of the basic event.
         :param prob: The new probability for the given event.
         """
-        if index in self.basic_events:
-            self.basic_events[index].set_probability(prob)
+        if index in self._basic_events:
+            self._basic_events[index].set_probability(prob)
 
     def set_probabilities(self, probabilities):
         """
@@ -74,21 +74,21 @@ class FaultTree:
         Apply the current state on the Gate of the system.
         Returns the returning value.
         """
-        return self.system.apply(print_trace)
+        return self._system.apply(print_trace)
 
     def get_false_state(self):
         """
         Get the state where all basic events are set to False.
         """
-        return {x: False for x in self.basic_events.keys()}
+        return {x: False for x in self._basic_events.keys()}
 
     def get_basic_event(self, index):
         """
         Returns the basic event with the given index or None if it does
         not exist.
         """
-        if index in self.basic_events:
-            return self.basic_events[index]
+        if index in self._basic_events:
+            return self._basic_events[index]
         return None
 
     def _construct_gates(self):
@@ -99,35 +99,35 @@ class FaultTree:
             return [x.input_gates] + \
                    [gates(y) for y in x.input_gates if x.input_gates]
 
-        return list(flatten(gates(self.system))) + [self.system]
+        return list(flatten(gates(self._system))) + [self._system]
 
     def get_gate(self, index):
         """
         Returns the first gate in the system matching the given index or
         None if there is no matching gate.
         """
-        if index in self.gates:
-            return self.gates[index]
+        if index in self._gates:
+            return self._gates[index]
         return None
 
     def get_basic_events(self):
         """
         Returns the dictionary of basic events.
         """
-        return self.basic_events
+        return self._basic_events
 
     def get_system(self):
         """
         Returns the system of the Fault Tree.
         """
-        return self.system
+        return self._system
 
     def max_depth(self):
         """
         Gets the maximum depth of the system.
         :return: The height of the system.
         """
-        return self._max_depth(self.system, 0)
+        return self._max_depth(self._system, 0)
 
     def _max_depth(self, gate, depth):
         """

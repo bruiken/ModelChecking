@@ -18,8 +18,8 @@ class BasicEvent(Gate):
                instance of the class Fraction.
         """
         super().__init__('BASIC', name, [])
-        self.state = initial_state
-        self.probability = None
+        self._state = initial_state
+        self._probability = None
         self.set_probability(initial_probability)
 
     def operation(self):
@@ -27,14 +27,14 @@ class BasicEvent(Gate):
         The operation for a BasicEvent ignores the input and returns the
         state of it.
         """
-        return lambda _: self.state
+        return lambda _: self._state
 
     def set_state(self, state):
         """
         Set the state of a BasicEvent, should be a boolean value.
         :param state: The new state, either True or False.
         """
-        self.state = state
+        self._state = state
 
     def set_probability(self, prob):
         """
@@ -43,17 +43,17 @@ class BasicEvent(Gate):
         the class Fraction.
         :param prob: The new probability.
         """
-        self.probability = Fraction(str(prob))
+        self._probability = Fraction(str(prob))
 
     def get_probability(self):
         """
         Returns the probability of the basic event.
         Note that this is an instance of Fraction.
         """
-        return self.probability
+        return self._probability
 
     def get_state(self):
         """"
         Returns the current state of the basic event.
         """
-        return self.state
+        return self._state

@@ -16,7 +16,7 @@ class BDDMinimiser:
         to minimise.
         :param bdd: The BDD to minimise.
         """
-        self.bdd = bdd
+        self._bdd = bdd
 
     def minimise(self):
         """
@@ -25,7 +25,7 @@ class BDDMinimiser:
         :return: A new BDD consisting of new Nodes that is the minimised
                  version of the old BDD.
         """
-        return BDD(self._minimise(self.bdd.get_system()))
+        return BDD(self._minimise(self._bdd.get_system()))
 
     def _minimise(self, node):
         """

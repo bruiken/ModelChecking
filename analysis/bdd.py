@@ -14,8 +14,8 @@ class BDDAnalyser:
         after calling the constructor.
         :param bdd: The BDD to analyse.
         """
-        self.bdd = bdd
-        self.edges, self.nodes = self._analyse_graph()
+        self._bdd = bdd
+        self._edges, self._nodes = self._analyse_graph()
 
     def _analyse_graph(self):
         """
@@ -24,19 +24,19 @@ class BDDAnalyser:
         many edges it has.
         :return: A tuple containing the number of nodes and edges.
         """
-        nodes = self._analyse_node(self.bdd.get_system(), set()) + 2
+        nodes = self._analyse_node(self._bdd.get_system(), set()) + 2
         edges = max(0, 2 * nodes - 4)
         return edges, nodes
 
     def _analyse_node(self, node, visited):
         """
-        Analyses one node, this calculates how many nodes are below the
+        Analyses one node, this caelow and including the
+                 current node.lculates how many nodes are below the
         current node. LeafNodes are not calculated. Instead, these are
         added after calling this function.
         :param node: The current node to analyse.
         :param visited: A set of already visited nodes.
-        :return: The number of BasicEventNodes below and including the
-                 current node.
+        :return: The number of BasicEventNodes b
         """
         if isinstance(node, BasicEventNode):
             if node in visited:
@@ -51,10 +51,10 @@ class BDDAnalyser:
         """
         Return the number of edges in the BDD.
         """
-        return self.edges
+        return self._edges
 
     def number_nodes(self):
         """
         Return the number of nodes in the BDD.
         """
-        return self.nodes
+        return self._nodes

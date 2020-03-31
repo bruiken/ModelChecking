@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-class _PrettyPrint:
+class PrettyPrint:
     """
     Base class for pretty printers.
     Pretty printers must override the _pretty_print function.

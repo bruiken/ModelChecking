@@ -1,9 +1,9 @@
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
-from prettyprinting.baseprinter import _PrettyPrint
+from prettyprinting.baseprinter import PrettyPrint
 
 
-class PrettyPrintBDD(_PrettyPrint):
+class PrettyPrintBDD(PrettyPrint):
     """
     Pretty printer for BDDs.
     Prints the BDD in a tree like structure. Leafs are drawn as boxes
@@ -19,10 +19,10 @@ class PrettyPrintBDD(_PrettyPrint):
         Constructor for a PrettyPrintBDD class.
         :param bdd: The BDD to print.
         """
-        self.bdd = bdd
-        self.graph = nx.MultiDiGraph()  # multiedges between nodes
-        self.labels = dict()  # dictionary to store labels of nodes in
-        self.multi_edge_radians = multi_edge_radians
+        self._bdd = bdd
+        self._graph = nx.MultiDiGraph()  # multiedges between nodes
+        self._labels = dict()  # dictionary to store labels of nodes in
+        self._multi_edge_radians = multi_edge_radians
 
     def _pretty_print(self):
         """
@@ -37,7 +37,7 @@ class PrettyPrintBDD(_PrettyPrint):
         Adds all the nodes to the networkx graph structure.
         To do this, the add nodes function is called with the full system.
         """
-        self._add_nodes(self.bdd.get_system())
+        self._add_nodes(self._bdd.get_system())
 
     def _add_nodes(self, node):
         """
@@ -46,24 +46,24 @@ class PrettyPrintBDD(_PrettyPrint):
         Also assigns labels to the node names for later use.
         :param node: The node to add.
         """
-        self.graph.add_node(node.get_unique_name())
-        self.labels[node.get_unique_name()] = node.get_name()
+        self._graph.add_node(node.get_unique_name())
+        self._labels[node.get_unique_name()] = node.get_name()
         if node.has_children():
             for child, dashed in zip(
                     [node.get_true_node(), node.get_false_node()],
                     [False, True]):  # to check if the line is dashed
                 self._add_nodes(child)
-                self.graph.add_edge(node.get_unique_name(),
-                                    child.get_unique_name(),
-                                    dashed=dashed)
+                self._graph.add_edge(node.get_unique_name(),
+                                     child.get_unique_name(),
+                                     dashed=dashed)
 
     def _draw_graph(self):
         """
         Draws the BDD graph. This is done by first drawing the nodes, then
         the edges and finally the labels.
         """
-        pos = graphviz_layout(self.graph, prog='dot')
-        nx.draw(self.graph, pos, node_size=0, edgelist=[])
+        pos = graphviz_layout(self._graph, prog='dot')
+        nx.draw(self._graph, pos, node_size=0, edgelist=[])
         self._draw_nodes(pos)
         self._draw_edges(pos)
         self._draw_labels(pos)
@@ -77,21 +77,21 @@ class PrettyPrintBDD(_PrettyPrint):
         :param pos: The positions of the nodes.
         """
         circles, boxes = [], []
-        for node in self.graph.nodes:
+        for node in self._graph.nodes:
             if node in [True, False]:
                 boxes.append(node)
             else:
                 circles.append(node)
-        nx.draw_networkx_nodes(self.graph, pos, boxes, node_shape='s',
+        nx.draw_networkx_nodes(self._graph, pos, boxes, node_shape='s',
                                edgecolors='#000000', node_color='#ffffff')
-        nx.draw_networkx_nodes(self.graph, pos, circles, node_shape='o',
+        nx.draw_networkx_nodes(self._graph, pos, circles, node_shape='o',
                                node_color='#ffffff', edgecolors='#000000')
 
     def _get_edge_dashed(self, edge):
         """
         Return whether or not the given edge should be dashed.
         """
-        return self.graph.get_edge_data(*edge)['dashed']
+        return self._graph.get_edge_data(*edge)['dashed']
 
     def _get_edge_style(self, edge):
         """
@@ -108,7 +108,7 @@ class PrettyPrintBDD(_PrettyPrint):
         Return whether or not the given edge is a multiedge (an edge that
         exists multiple times).
         """
-        return len(self.graph[edge[0]][edge[1]]) > 1
+        return len(self._graph[edge[0]][edge[1]]) > 1
 
     def _draw_edges(self, pos):
         """
@@ -120,7 +120,7 @@ class PrettyPrintBDD(_PrettyPrint):
         visible.
         :param pos: The positions of the nodes.
         """
-        for edge in self.graph.edges:
+        for edge in self._graph.edges:
             edge_data = {'arrows': True,
                          'arrowstyle': '-',
                          'style': self._get_edge_style(edge)}
@@ -131,7 +131,7 @@ class PrettyPrintBDD(_PrettyPrint):
                 else:
                     edge_data['connectionstyle'] = \
                         self._multiedge_style(False)
-            nx.draw_networkx_edges(self.graph, pos, [edge], **edge_data)
+            nx.draw_networkx_edges(self._graph, pos, [edge], **edge_data)
 
     def _multiedge_style(self, negative):
         """
@@ -140,13 +140,13 @@ class PrettyPrintBDD(_PrettyPrint):
         :param negative: If the angle should be negative
         """
         if not negative:
-            return 'arc3, rad={}'.format(self.multi_edge_radians)
+            return 'arc3, rad={}'.format(self._multi_edge_radians)
         else:
-            return 'arc3, rad=-{}'.format(self.multi_edge_radians)
+            return 'arc3, rad=-{}'.format(self._multi_edge_radians)
 
     def _draw_labels(self, pos):
         """
         Draw the labels of the BDD graph.
         :param pos: The positions of the nodes.
         """
-        nx.draw_networkx_labels(self.graph, pos, self.labels)
+        nx.draw_networkx_labels(self._graph, pos, self._labels)
