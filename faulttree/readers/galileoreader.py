@@ -1,11 +1,11 @@
-from faulttree.readers.basereader import _InputReader
+from faulttree.readers.basereader import InputReader
 from exceptions import GalileoParseException
 import re
 from faulttree.gates import AndGate, OrGate, BasicEvent, VotGate
 from faulttree import FaultTree
 
 
-class GalileoReader(_InputReader):
+class GalileoReader(InputReader):
     """
     The GalileoReader can create a faulttree from the Galileo format.
     """
@@ -16,9 +16,9 @@ class GalileoReader(_InputReader):
         read from.
         """
         super().__init__(file)
-        self.gates = {}
-        self.toplevel = None
-        self.created_gates = {}
+        self._gates = {}
+        self._toplevel = None
+        self._created_gates = {}
 
     def create_faulttree(self):
         """
@@ -28,14 +28,14 @@ class GalileoReader(_InputReader):
 
         :raises: GalileoParseException: If the tree could not be created.
         """
-        self.parse_file()
-        if not self.toplevel:
+        self._parse_file()
+        if not self._toplevel:
             raise GalileoParseException('Toplevel is not defined')
         else:
-            system = self.create_gates(self.toplevel)
-            return FaultTree(self.toplevel, system)
+            system = self._create_gates(self._toplevel)
+            return FaultTree(self._toplevel, system)
 
-    def create_gates(self, gate_name):
+    def _create_gates(self, gate_name):
         """
         Create gates creates the faulttree for the given gate name.
         We do this by first checking if we already created the gate, if
@@ -45,16 +45,16 @@ class GalileoReader(_InputReader):
         :return: The created gate.
         :raises: GalileoParseException: If the tree could not be created.
         """
-        if gate_name in self.created_gates:
-            return self.created_gates[gate_name]
-        elif gate_name in self.gates:
-            return self.create_gate(gate_name)
+        if gate_name in self._created_gates:
+            return self._created_gates[gate_name]
+        elif gate_name in self._gates:
+            return self._create_gate(gate_name)
         else:
             raise GalileoParseException(
                 'Missing constructor for gate "{}"'.format(gate_name)
             )
 
-    def create_gate(self, name):
+    def _create_gate(self, name):
         """
         The create_gate function creates a new entry to the cached gates.
         If the gate has input gates, recursively call the create_gates
@@ -62,24 +62,24 @@ class GalileoReader(_InputReader):
         :param name: The name of the gate to be created.
         :return: The created gate.
         """
-        construct, options = self.gates[name]
+        construct, options = self._gates[name]
         if 'input_gates' in options:
             options['input_gates'] = list(map(
-                lambda x: self.create_gates(x), options['input_gates']
+                lambda x: self._create_gates(x), options['input_gates']
             ))
         gate = construct(name, **options)
-        self.created_gates[name] = gate
+        self._created_gates[name] = gate
         return gate
 
-    def parse_file(self):
+    def _parse_file(self):
         """
         Parses the given file to read all the gates.
         :raises: GalileoParseException: If the file could not be parsed.
         """
-        for line in self.contents.split('\n'):
-            self.parse_line(line)
+        for line in self._contents.split('\n'):
+            self._parse_line(line)
 
-    def parse_line(self, line):
+    def _parse_line(self, line):
         """
         Parses one line from a file in Galileo format.
         :param line: The line to parse.
@@ -89,25 +89,25 @@ class GalileoReader(_InputReader):
         if len(args) == 0:
             return
         elif args[0] == 'toplevel':
-            self.parse_toplevel(args)
-        elif len(args) > 1 and GalileoReader.is_gate(args[1]):
-            self.parse_gate(args)
+            self._parse_toplevel(args)
+        elif len(args) > 1 and GalileoReader._is_gate(args[1]):
+            self._parse_gate(args)
         else:
-            self.parse_basic_event(args)
+            self._parse_basic_event(args)
 
-    def parse_toplevel(self, args):
+    def _parse_toplevel(self, args):
         """
         Parses a line that defines the toplevel.
         :param args: A list of arguments that describes the line.
         :raises: GalileoParseException: If the file could not be parsed.
         """
-        if self.toplevel:
+        if self._toplevel:
             raise GalileoParseException('Toplevel is defined twice')
         else:
-            self.toplevel = GalileoReader.read_name(args[1])
+            self._toplevel = GalileoReader._read_name(args[1])
 
     @staticmethod
-    def is_gate(gate):
+    def _is_gate(gate):
         """
         Checks whether the given name is a gate.
         :param gate: The name to check.
@@ -115,7 +115,7 @@ class GalileoReader(_InputReader):
         """
         return gate in ['and', 'or'] or re.match(r'^\d+of\d+$', gate)
 
-    def parse_gate(self, args):
+    def _parse_gate(self, args):
         """
         Parses a line that describes a gate.
         This also creates an entry in the self.gates dictionary.
@@ -123,15 +123,15 @@ class GalileoReader(_InputReader):
         :raises: GalileoParseException: If the name is not in a correct
                  format.
         """
-        name = GalileoReader.read_name(args[0])
-        if name not in self.gates:
-            self.gates[name] = GalileoReader.get_gate(args[1])
+        name = GalileoReader._read_name(args[0])
+        if name not in self._gates:
+            self._gates[name] = GalileoReader._get_gate(args[1])
             for gate in args[2:]:
-                gate_name = GalileoReader.read_name(gate)
-                self.gates[name][1]['input_gates'].append(gate_name)
+                gate_name = GalileoReader._read_name(gate)
+                self._gates[name][1]['input_gates'].append(gate_name)
 
     @staticmethod
-    def get_gate(gate):
+    def _get_gate(gate):
         """
         Create a construct for a gate.
         We use this later when actually creating the gates. We cannot
@@ -156,22 +156,22 @@ class GalileoReader(_InputReader):
             'No suitable gate found for "{}"'.format(gate)
         )
 
-    def parse_basic_event(self, args):
+    def _parse_basic_event(self, args):
         """
         Parses a line that describes a basic event.
         :param args: The arguments that describe the basic event.
         :raises: GalileoParseException: If the name is not in a correct
                  format.
         """
-        name = GalileoReader.read_name(args[0])
-        attrs = GalileoReader.parse_basic_event_args(args[1:])
+        name = GalileoReader._read_name(args[0])
+        attrs = GalileoReader._parse_basic_event_args(args[1:])
         options = dict()
         if 'prob' in attrs:
             options['initial_probability'] = attrs['prob']
-        self.gates[name] = BasicEvent, options
+        self._gates[name] = BasicEvent, options
 
     @staticmethod
-    def parse_basic_event_args(args):
+    def _parse_basic_event_args(args):
         """
         Parses the basic event args. We use this to parse the extra
         options in the basic event in the form of ``key=val''.
@@ -185,7 +185,7 @@ class GalileoReader(_InputReader):
         return result
 
     @staticmethod
-    def read_name(word):
+    def _read_name(word):
         """
         Read a name in the Galileo file.
         This can be either something in the form "foo", for which we only

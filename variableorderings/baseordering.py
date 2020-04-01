@@ -9,7 +9,7 @@ class Ordering:
         Constructor for a variable ordering.
         :param ordering_type: type of the ordering (algorithm used)
         """
-        self.ordering_type = ordering_type
+        self._ordering_type = ordering_type
 
     def order_variables(self, fault_tree):
         """
@@ -22,4 +22,4 @@ class Ordering:
         """
         Returns the name of the ordering.
         """
-        return self.ordering_type
+        return self._ordering_type

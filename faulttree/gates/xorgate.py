@@ -15,7 +15,7 @@ class XorGate(Gate):
         super().__init__('XOR', name, input_gates, './resources/xorgate.png')
 
     @staticmethod
-    def xor_check(results):
+    def _xor_check(results):
         """
         Helper function to determine the result of the XOR-gate. Returns
         True iff exactly input of the gates is True.
@@ -34,4 +34,4 @@ class XorGate(Gate):
         The operation for the XorGate. Uses the helper function xor_check.
         :return:
         """
-        return self.xor_check
+        return self._xor_check

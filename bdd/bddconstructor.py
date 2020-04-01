@@ -13,7 +13,7 @@ class BDDConstructor:
         Constructor for the BDDConstructor. Takes as an argument
         the fault tree to be converted.
         """
-        self.fault_tree = fault_tree
+        self._fault_tree = fault_tree
 
     def construct_bdd(self, ordering, minimise=True):
         """
@@ -23,10 +23,10 @@ class BDDConstructor:
                          construction.
         :return: the created system.
         """
-        var_ordering = ordering.order_variables(self.fault_tree)
+        var_ordering = ordering.order_variables(self._fault_tree)
         bdd = BDD(self._construct_bdd(
             var_ordering,
-            self.fault_tree.get_false_state()
+            self._fault_tree.get_false_state()
         ))
         if minimise:
             return BDDMinimiser(bdd).minimise()
@@ -40,8 +40,8 @@ class BDDConstructor:
         of the final BDD.
         This function works depth first.
         """
-        self.fault_tree.set_states(state)
-        fault_tree_holds = self.fault_tree.apply()
+        self._fault_tree.set_states(state)
+        fault_tree_holds = self._fault_tree.apply()
         if fault_tree_holds or not variable_ordering:
             return LeafNode(fault_tree_holds)
         else:
@@ -63,7 +63,7 @@ class BDDConstructor:
         return BasicEventNode(
             true_node,
             false_node,
-            self.fault_tree.get_basic_event(variable)
+            self._fault_tree.get_basic_event(variable)
         )
 
     def construct_bdd_test(self, variable_ordering):
@@ -74,5 +74,5 @@ class BDDConstructor:
         :param variable_ordering:
         :return: The constructed BDD.
         """
-        false_state = self.fault_tree.get_false_state()
+        false_state = self._fault_tree.get_false_state()
         return BDD(self._construct_bdd(variable_ordering, false_state))

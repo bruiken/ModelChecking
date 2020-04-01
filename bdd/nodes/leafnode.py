@@ -13,7 +13,7 @@ class LeafNode(Node):
         True or False.
         """
         super().__init__()
-        self.value = value
+        self._value = value
 
     def calculate_probability(self):
         """
@@ -21,26 +21,26 @@ class LeafNode(Node):
         This is just the integer representation of the value, True
         is 1, False is 0.
         """
-        return int(self.value)
+        return int(self._value)
 
     def get_name(self):
         """
         Get the name of the LeafNode, which is either the string "True" or
         "False".
         """
-        return str(int(self.value))
+        return str(int(self._value))
 
     def get_value(self):
         """
         Get the value of the LeafNode. Which is either True or False.
         """
-        return self.value
+        return self._value
 
     def get_unique_name(self):
         """
         Get the unique name of the leaf node, which is its value.
         """
-        return self.value
+        return self._value
 
     def get_leaf_nodes(self):
         """
@@ -48,4 +48,4 @@ class LeafNode(Node):
         with its value.
         :return:
         """
-        return {self.value}
+        return {self._value}

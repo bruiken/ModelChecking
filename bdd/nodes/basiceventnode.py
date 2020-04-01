@@ -12,9 +12,9 @@ class BasicEventNode(Node):
         path, a node for the "false" path and a name.
         """
         super().__init__()
-        self.node_true = node_true
-        self.node_false = node_false
-        self.basic_event = basic_event
+        self._node_true = node_true
+        self._node_false = node_false
+        self._basic_event = basic_event
 
     def calculate_probability(self):
         """
@@ -24,10 +24,10 @@ class BasicEventNode(Node):
         or (1 - prob_basic_event) (depending on the true- or false-path
         respectively).
         """
-        false_prob = self.node_false.calculate_probability()
-        true_prob = self.node_true.calculate_probability()
-        return false_prob * (1 - self.basic_event.get_probability()) + \
-            true_prob * self.basic_event.get_probability()
+        false_prob = self._node_false.calculate_probability()
+        true_prob = self._node_true.calculate_probability()
+        return false_prob * (1 - self._basic_event.get_probability()) + \
+            true_prob * self._basic_event.get_probability()
 
     def has_children(self):
         """
@@ -40,25 +40,25 @@ class BasicEventNode(Node):
         Gets the BasicEvent class that represents the basic event in the
         node.
         """
-        return self.basic_event
+        return self._basic_event
 
     def get_true_node(self):
         """
         Returns the node that is reached when taking the "True" path.
         """
-        return self.node_true
+        return self._node_true
 
     def get_false_node(self):
         """
         Returns the node that is reached when taking the "False" path.
         """
-        return self.node_false
+        return self._node_false
 
     def get_name(self):
         """
         Returns the name of the node.
         """
-        return self.basic_event.get_name()
+        return self._basic_event.get_name()
 
     def get_leaf_nodes(self):
         """
@@ -68,7 +68,7 @@ class BasicEventNode(Node):
         a different leaf node that can be reached in there.
         :return: A set of leaf nodes reachable from this node.
         """
-        leaves = self.node_true.get_leaf_nodes()
+        leaves = self._node_true.get_leaf_nodes()
         if len(leaves) == 1:
-            leaves = leaves.union(self.node_false.get_leaf_nodes())
+            leaves = leaves.union(self._node_false.get_leaf_nodes())
         return leaves

@@ -1,4 +1,4 @@
-class _InputReader:
+class InputReader:
     """
     Base class for an input reader.
     """
@@ -8,14 +8,14 @@ class _InputReader:
         Cosntructor for an InputReader.
         Takes the path to the file as an argument.
         """
-        self.file = file
-        self.contents = self.get_contents()
+        self._file = file
+        self._contents = self._get_contents()
 
-    def get_contents(self):
+    def _get_contents(self):
         """
         Get the contents of the file given to the constructor.
         """
-        with open(self.file, 'r') as f:
+        with open(self._file, 'r') as f:
             return f.read()
 
     def create_faulttree(self):
