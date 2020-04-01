@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.5" />
+<title>ModelChecking.faulttree.faulttree API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ModelChecking.faulttree.faulttree</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import collections
+from faulttree.gates import BasicEvent
+
+
+class FaultTree:
+    &#34;&#34;&#34;
+    The FaultTree class defines a complete FaultTree.
+    It has a Gate as its system, a number of basic events and a name.
+    &#34;&#34;&#34;
+
+    def __init__(self, name, system):
+        &#34;&#34;&#34;
+        The constructor for a FaultTree.
+        :param name: The name of the FaultTree.
+        :param system: The Gate of the system.
+        &#34;&#34;&#34;
+        self._name = name,
+        self._system = system
+        self._gates = {
+            x.get_unique_index(): x for x in self._construct_gates()
+        }
+        self._basic_events = self._get_basic_events()
+
+    def _get_basic_events(self):
+        result = {}
+        for k, v in self._gates.items():
+            if isinstance(v, BasicEvent):
+                result[k] = v
+        return result
+
+    def set_state(self, index, state):
+        &#34;&#34;&#34;
+        Sets the state of some basic event to the given value.
+        :param index: The index of the basic event.
+        :param state: The new state for the given event.
+        &#34;&#34;&#34;
+        if index in self._basic_events:
+            self._basic_events[index].set_state(state)
+
+    def set_states(self, states):
+        &#34;&#34;&#34;
+        Sets the states for many basic events at once.
+        The input should be a dictionary keyed on the indices of the basic
+        events, values are boolean.
+        &#34;&#34;&#34;
+        for index, state in states.items():
+            self.set_state(index, state)
+
+    def set_probability(self, index, prob):
+        &#34;&#34;&#34;
+        Sets the probability of some basic event to the given value. When
+        supplying a fraction use a string (&#39;1/7&#39;) or an instance of the
+        class Fraction.
+        :param index: The index of the basic event.
+        :param prob: The new probability for the given event.
+        &#34;&#34;&#34;
+        if index in self._basic_events:
+            self._basic_events[index].set_probability(prob)
+
+    def set_probabilities(self, probabilities):
+        &#34;&#34;&#34;
+        Sets multiple probabilities of basic events at once.
+        Uses the set_probability function multiple times.
+        The input should be a dictionary keyed on the names of the basic
+        events and valued with their probabilities. When supplying a
+        fraction use a string (&#39;1/7&#39;) or an instance of the class
+        Fraction.
+        &#34;&#34;&#34;
+        for index, prob in probabilities.items():
+            self.set_probability(index, prob)
+
+    def apply(self, print_trace=False):
+        &#34;&#34;&#34;
+        Apply the current state on the Gate of the system.
+        Returns the returning value.
+        &#34;&#34;&#34;
+        return self._system.apply(print_trace)
+
+    def get_false_state(self):
+        &#34;&#34;&#34;
+        Get the state where all basic events are set to False.
+        &#34;&#34;&#34;
+        return {x: False for x in self._basic_events.keys()}
+
+    def get_basic_event(self, index):
+        &#34;&#34;&#34;
+        Returns the basic event with the given index or None if it does
+        not exist.
+        &#34;&#34;&#34;
+        if index in self._basic_events:
+            return self._basic_events[index]
+        return None
+
+    def _construct_gates(self):
+        &#34;&#34;&#34;
+        Constructs the set of all Gates in the system and returns it.
+        &#34;&#34;&#34;
+        def gates(x):
+            return [x.input_gates] + \
+                   [gates(y) for y in x.input_gates if x.input_gates]
+
+        return list(flatten(gates(self._system))) + [self._system]
+
+    def get_gate(self, index):
+        &#34;&#34;&#34;
+        Returns the first gate in the system matching the given index or
+        None if there is no matching gate.
+        &#34;&#34;&#34;
+        if index in self._gates:
+            return self._gates[index]
+        return None
+
+    def get_basic_events(self):
+        &#34;&#34;&#34;
+        Returns the dictionary of basic events.
+        &#34;&#34;&#34;
+        return self._basic_events
+
+    def get_system(self):
+        &#34;&#34;&#34;
+        Returns the system of the Fault Tree.
+        &#34;&#34;&#34;
+        return self._system
+
+    def max_depth(self):
+        &#34;&#34;&#34;
+        Gets the maximum depth of the system.
+        :return: The height of the system.
+        &#34;&#34;&#34;
+        return self._max_depth(self._system, 0)
+
+    def _max_depth(self, gate, depth):
+        &#34;&#34;&#34;
+        Calculates the max depth of the given gate recursively).
+        :param gate: The current gate.
+        :param depth: The current depth.
+        :return: the maximum depth from the given gate.
+        &#34;&#34;&#34;
+        if isinstance(gate, BasicEvent):
+            return depth
+        return max(
+            self._max_depth(x, depth+1) for x in gate.get_input_gates()
+        )
+
+
+def flatten(l):
+    &#34;&#34;&#34;
+    Flattens a list of elements. This list can contain any depth of lists,
+    and it will be converted to a 1 dimensional list.
+    &#34;&#34;&#34;
+    for el in l:
+        if isinstance(el, collections.Iterable) and \
+                not isinstance(el, (str, bytes)):
+            yield from flatten(el)
+        else:
+            yield el</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="ModelChecking.faulttree.faulttree.flatten"><code class="name flex">
+<span>def <span class="ident">flatten</span></span>(<span>l)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Flattens a list of elements. This list can contain any depth of lists,
+and it will be converted to a 1 dimensional list.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def flatten(l):
+    &#34;&#34;&#34;
+    Flattens a list of elements. This list can contain any depth of lists,
+    and it will be converted to a 1 dimensional list.
+    &#34;&#34;&#34;
+    for el in l:
+        if isinstance(el, collections.Iterable) and \
+                not isinstance(el, (str, bytes)):
+            yield from flatten(el)
+        else:
+            yield el</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree"><code class="flex name class">
+<span>class <span class="ident">FaultTree</span></span>
+<span>(</span><span>name, system)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>The FaultTree class defines a complete FaultTree.
+It has a Gate as its system, a number of basic events and a name.</p>
+<p>The constructor for a FaultTree.
+:param name: The name of the FaultTree.
+:param system: The Gate of the system.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FaultTree:
+    &#34;&#34;&#34;
+    The FaultTree class defines a complete FaultTree.
+    It has a Gate as its system, a number of basic events and a name.
+    &#34;&#34;&#34;
+
+    def __init__(self, name, system):
+        &#34;&#34;&#34;
+        The constructor for a FaultTree.
+        :param name: The name of the FaultTree.
+        :param system: The Gate of the system.
+        &#34;&#34;&#34;
+        self._name = name,
+        self._system = system
+        self._gates = {
+            x.get_unique_index(): x for x in self._construct_gates()
+        }
+        self._basic_events = self._get_basic_events()
+
+    def _get_basic_events(self):
+        result = {}
+        for k, v in self._gates.items():
+            if isinstance(v, BasicEvent):
+                result[k] = v
+        return result
+
+    def set_state(self, index, state):
+        &#34;&#34;&#34;
+        Sets the state of some basic event to the given value.
+        :param index: The index of the basic event.
+        :param state: The new state for the given event.
+        &#34;&#34;&#34;
+        if index in self._basic_events:
+            self._basic_events[index].set_state(state)
+
+    def set_states(self, states):
+        &#34;&#34;&#34;
+        Sets the states for many basic events at once.
+        The input should be a dictionary keyed on the indices of the basic
+        events, values are boolean.
+        &#34;&#34;&#34;
+        for index, state in states.items():
+            self.set_state(index, state)
+
+    def set_probability(self, index, prob):
+        &#34;&#34;&#34;
+        Sets the probability of some basic event to the given value. When
+        supplying a fraction use a string (&#39;1/7&#39;) or an instance of the
+        class Fraction.
+        :param index: The index of the basic event.
+        :param prob: The new probability for the given event.
+        &#34;&#34;&#34;
+        if index in self._basic_events:
+            self._basic_events[index].set_probability(prob)
+
+    def set_probabilities(self, probabilities):
+        &#34;&#34;&#34;
+        Sets multiple probabilities of basic events at once.
+        Uses the set_probability function multiple times.
+        The input should be a dictionary keyed on the names of the basic
+        events and valued with their probabilities. When supplying a
+        fraction use a string (&#39;1/7&#39;) or an instance of the class
+        Fraction.
+        &#34;&#34;&#34;
+        for index, prob in probabilities.items():
+            self.set_probability(index, prob)
+
+    def apply(self, print_trace=False):
+        &#34;&#34;&#34;
+        Apply the current state on the Gate of the system.
+        Returns the returning value.
+        &#34;&#34;&#34;
+        return self._system.apply(print_trace)
+
+    def get_false_state(self):
+        &#34;&#34;&#34;
+        Get the state where all basic events are set to False.
+        &#34;&#34;&#34;
+        return {x: False for x in self._basic_events.keys()}
+
+    def get_basic_event(self, index):
+        &#34;&#34;&#34;
+        Returns the basic event with the given index or None if it does
+        not exist.
+        &#34;&#34;&#34;
+        if index in self._basic_events:
+            return self._basic_events[index]
+        return None
+
+    def _construct_gates(self):
+        &#34;&#34;&#34;
+        Constructs the set of all Gates in the system and returns it.
+        &#34;&#34;&#34;
+        def gates(x):
+            return [x.input_gates] + \
+                   [gates(y) for y in x.input_gates if x.input_gates]
+
+        return list(flatten(gates(self._system))) + [self._system]
+
+    def get_gate(self, index):
+        &#34;&#34;&#34;
+        Returns the first gate in the system matching the given index or
+        None if there is no matching gate.
+        &#34;&#34;&#34;
+        if index in self._gates:
+            return self._gates[index]
+        return None
+
+    def get_basic_events(self):
+        &#34;&#34;&#34;
+        Returns the dictionary of basic events.
+        &#34;&#34;&#34;
+        return self._basic_events
+
+    def get_system(self):
+        &#34;&#34;&#34;
+        Returns the system of the Fault Tree.
+        &#34;&#34;&#34;
+        return self._system
+
+    def max_depth(self):
+        &#34;&#34;&#34;
+        Gets the maximum depth of the system.
+        :return: The height of the system.
+        &#34;&#34;&#34;
+        return self._max_depth(self._system, 0)
+
+    def _max_depth(self, gate, depth):
+        &#34;&#34;&#34;
+        Calculates the max depth of the given gate recursively).
+        :param gate: The current gate.
+        :param depth: The current depth.
+        :return: the maximum depth from the given gate.
+        &#34;&#34;&#34;
+        if isinstance(gate, BasicEvent):
+            return depth
+        return max(
+            self._max_depth(x, depth+1) for x in gate.get_input_gates()
+        )</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.apply"><code class="name flex">
+<span>def <span class="ident">apply</span></span>(<span>self, print_trace=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Apply the current state on the Gate of the system.
+Returns the returning value.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply(self, print_trace=False):
+    &#34;&#34;&#34;
+    Apply the current state on the Gate of the system.
+    Returns the returning value.
+    &#34;&#34;&#34;
+    return self._system.apply(print_trace)</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.get_basic_event"><code class="name flex">
+<span>def <span class="ident">get_basic_event</span></span>(<span>self, index)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the basic event with the given index or None if it does
+not exist.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_basic_event(self, index):
+    &#34;&#34;&#34;
+    Returns the basic event with the given index or None if it does
+    not exist.
+    &#34;&#34;&#34;
+    if index in self._basic_events:
+        return self._basic_events[index]
+    return None</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.get_basic_events"><code class="name flex">
+<span>def <span class="ident">get_basic_events</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the dictionary of basic events.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_basic_events(self):
+    &#34;&#34;&#34;
+    Returns the dictionary of basic events.
+    &#34;&#34;&#34;
+    return self._basic_events</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.get_false_state"><code class="name flex">
+<span>def <span class="ident">get_false_state</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get the state where all basic events are set to False.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_false_state(self):
+    &#34;&#34;&#34;
+    Get the state where all basic events are set to False.
+    &#34;&#34;&#34;
+    return {x: False for x in self._basic_events.keys()}</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.get_gate"><code class="name flex">
+<span>def <span class="ident">get_gate</span></span>(<span>self, index)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the first gate in the system matching the given index or
+None if there is no matching gate.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_gate(self, index):
+    &#34;&#34;&#34;
+    Returns the first gate in the system matching the given index or
+    None if there is no matching gate.
+    &#34;&#34;&#34;
+    if index in self._gates:
+        return self._gates[index]
+    return None</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.get_system"><code class="name flex">
+<span>def <span class="ident">get_system</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the system of the Fault Tree.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_system(self):
+    &#34;&#34;&#34;
+    Returns the system of the Fault Tree.
+    &#34;&#34;&#34;
+    return self._system</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.max_depth"><code class="name flex">
+<span>def <span class="ident">max_depth</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Gets the maximum depth of the system.
+:return: The height of the system.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def max_depth(self):
+    &#34;&#34;&#34;
+    Gets the maximum depth of the system.
+    :return: The height of the system.
+    &#34;&#34;&#34;
+    return self._max_depth(self._system, 0)</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.set_probabilities"><code class="name flex">
+<span>def <span class="ident">set_probabilities</span></span>(<span>self, probabilities)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Sets multiple probabilities of basic events at once.
+Uses the set_probability function multiple times.
+The input should be a dictionary keyed on the names of the basic
+events and valued with their probabilities. When supplying a
+fraction use a string ('1/7') or an instance of the class
+Fraction.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_probabilities(self, probabilities):
+    &#34;&#34;&#34;
+    Sets multiple probabilities of basic events at once.
+    Uses the set_probability function multiple times.
+    The input should be a dictionary keyed on the names of the basic
+    events and valued with their probabilities. When supplying a
+    fraction use a string (&#39;1/7&#39;) or an instance of the class
+    Fraction.
+    &#34;&#34;&#34;
+    for index, prob in probabilities.items():
+        self.set_probability(index, prob)</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.set_probability"><code class="name flex">
+<span>def <span class="ident">set_probability</span></span>(<span>self, index, prob)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Sets the probability of some basic event to the given value. When
+supplying a fraction use a string ('1/7') or an instance of the
+class Fraction.
+:param index: The index of the basic event.
+:param prob: The new probability for the given event.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_probability(self, index, prob):
+    &#34;&#34;&#34;
+    Sets the probability of some basic event to the given value. When
+    supplying a fraction use a string (&#39;1/7&#39;) or an instance of the
+    class Fraction.
+    :param index: The index of the basic event.
+    :param prob: The new probability for the given event.
+    &#34;&#34;&#34;
+    if index in self._basic_events:
+        self._basic_events[index].set_probability(prob)</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.set_state"><code class="name flex">
+<span>def <span class="ident">set_state</span></span>(<span>self, index, state)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Sets the state of some basic event to the given value.
+:param index: The index of the basic event.
+:param state: The new state for the given event.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_state(self, index, state):
+    &#34;&#34;&#34;
+    Sets the state of some basic event to the given value.
+    :param index: The index of the basic event.
+    :param state: The new state for the given event.
+    &#34;&#34;&#34;
+    if index in self._basic_events:
+        self._basic_events[index].set_state(state)</code></pre>
+</details>
+</dd>
+<dt id="ModelChecking.faulttree.faulttree.FaultTree.set_states"><code class="name flex">
+<span>def <span class="ident">set_states</span></span>(<span>self, states)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Sets the states for many basic events at once.
+The input should be a dictionary keyed on the indices of the basic
+events, values are boolean.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_states(self, states):
+    &#34;&#34;&#34;
+    Sets the states for many basic events at once.
+    The input should be a dictionary keyed on the indices of the basic
+    events, values are boolean.
+    &#34;&#34;&#34;
+    for index, state in states.items():
+        self.set_state(index, state)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ModelChecking.faulttree" href="index.html">ModelChecking.faulttree</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="ModelChecking.faulttree.faulttree.flatten" href="#ModelChecking.faulttree.faulttree.flatten">flatten</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ModelChecking.faulttree.faulttree.FaultTree" href="#ModelChecking.faulttree.faulttree.FaultTree">FaultTree</a></code></h4>
+<ul class="two-column">
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.apply" href="#ModelChecking.faulttree.faulttree.FaultTree.apply">apply</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.get_basic_event" href="#ModelChecking.faulttree.faulttree.FaultTree.get_basic_event">get_basic_event</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.get_basic_events" href="#ModelChecking.faulttree.faulttree.FaultTree.get_basic_events">get_basic_events</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.get_false_state" href="#ModelChecking.faulttree.faulttree.FaultTree.get_false_state">get_false_state</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.get_gate" href="#ModelChecking.faulttree.faulttree.FaultTree.get_gate">get_gate</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.get_system" href="#ModelChecking.faulttree.faulttree.FaultTree.get_system">get_system</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.max_depth" href="#ModelChecking.faulttree.faulttree.FaultTree.max_depth">max_depth</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.set_probabilities" href="#ModelChecking.faulttree.faulttree.FaultTree.set_probabilities">set_probabilities</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.set_probability" href="#ModelChecking.faulttree.faulttree.FaultTree.set_probability">set_probability</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.set_state" href="#ModelChecking.faulttree.faulttree.FaultTree.set_state">set_state</a></code></li>
+<li><code><a title="ModelChecking.faulttree.faulttree.FaultTree.set_states" href="#ModelChecking.faulttree.faulttree.FaultTree.set_states">set_states</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
