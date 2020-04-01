@@ -63,13 +63,13 @@ class BDDBenchmark:
                  be recognised.
         """
         if file:
-            self.file = file
-            self.fault_tree = self._read_file()
-            self.name = Path(file).name
+            self._file = file
+            self._fault_tree = self._read_file()
+            self._name = Path(file).name
         else:
-            self.fault_tree = fault_tree
-            self.name = self.fault_tree.get_system().get_name()
-        self.results = {}
+            self._fault_tree = fault_tree
+            self._name = self._fault_tree.get_system().get_name()
+        self._results = {}
 
     def _read_file(self):
         """
@@ -78,9 +78,9 @@ class BDDBenchmark:
         :raises: UnsupportedFileTypeException: If the given file could not
                  be recognised.
         """
-        filetype = self.file[self.file.rfind('.'):]
+        filetype = self._file[self._file.rfind('.'):]
         if filetype == '.dft':
-            return GalileoReader(self.file).create_faulttree()
+            return GalileoReader(self._file).create_faulttree()
         raise UnsupportedFileTypeException('{}'.format(filetype))
 
     def benchmark(self, orderings):
@@ -95,7 +95,7 @@ class BDDBenchmark:
         :param orderings: A list containing Ordering classes.
         """
         for ordering in orderings:
-            self.results[ordering] = BenchmarkResult()
+            self._results[ordering] = BenchmarkResult()
             self._benchmark_ordering(ordering)
             self._benchmark_construction(ordering)
             self._benchmark_minimising(ordering)
@@ -108,50 +108,51 @@ class BDDBenchmark:
         :param ordering: The ordering to benchmark.
         """
         start_time = time()
-        var_ordering = ordering.order_variables(self.fault_tree)
-        self.results[ordering].ordering_time = time() - start_time
-        self.results[ordering].ordering = var_ordering
+        var_ordering = ordering.order_variables(self._fault_tree)
+        self._results[ordering].ordering_time = time() - start_time
+        self._results[ordering].ordering = var_ordering
 
     def _benchmark_construction(self, ordering):
         """
         Benchmarks the construction phase of the BDD creation.
         :param ordering: The ordering to benchmark.
         """
-        var_order = self.results[ordering].ordering
+        var_order = self._results[ordering].ordering
         start_time = time()
-        constructor = BDDConstructor(self.fault_tree)
+        constructor = BDDConstructor(self._fault_tree)
         bdd = constructor.construct_bdd_test(var_order)
-        self.results[ordering].construction_time = time() - start_time
-        self.results[ordering].bdd = bdd
+        self._results[ordering].construction_time = time() - start_time
+        self._results[ordering].bdd = bdd
 
     def _benchmark_minimising(self, ordering):
         """
         Benchmark the minimising phase of the BDD creation.
         :param ordering: The ordering to benchmark.
         """
-        bdd = self.results[ordering].bdd
+        bdd = self._results[ordering].bdd
         start_time = time()
         min_bdd = BDDMinimiser(bdd).minimise()
-        self.results[ordering].minimising_time = time() - start_time
-        self.results[ordering].min_bdd = min_bdd
+        self._results[ordering].minimising_time = time() - start_time
+        self._results[ordering].min_bdd = min_bdd
 
     def _analyse_bdd(self, ordering):
         """
         Analyses the non minimised BDD.
         :param ordering: The ordering to analyse.
         """
-        bdd = self.results[ordering].bdd
+        bdd = self._results[ordering].bdd
         bdd_analyser = BDDAnalyser(bdd)
-        self.results[ordering].bdd_nodes = bdd_analyser.number_nodes()
+        self._results[ordering].bdd_nodes = bdd_analyser.number_nodes()
 
     def _analyse_min_bdd(self, ordering):
         """
         Analyses the minimised BDD.
         :param ordering: The ordering to analyse.
         """
-        bdd = self.results[ordering].min_bdd
+        bdd = self._results[ordering].min_bdd
         bdd_analyser = BDDAnalyser(bdd)
-        self.results[ordering].min_bdd_nodes = bdd_analyser.number_nodes()
+        number_nodes = bdd_analyser.number_nodes()
+        self._results[ordering].min_bdd_nodes = number_nodes
 
     def __str__(self):
         """
@@ -159,7 +160,7 @@ class BDDBenchmark:
         This shows, for each ordering, the name and the result.
         """
         r = ''
-        for ordering, result in self.results.items():
+        for ordering, result in self._results.items():
             r += ordering.get_ordering_type() + '\n'
             r += str(result) + '\n'
             r += '------------------------------\n'
@@ -173,7 +174,7 @@ class BDDBenchmark:
         :param path: The path to store the graph.
         :param dpi: The desired dpi of the image.
         """
-        grapher = BDDBenchmarkGrapher(self.results, self.name)
+        grapher = BDDBenchmarkGrapher(self._results, self._name)
         grapher.save_figure(path, dpi)
 
 
@@ -191,8 +192,8 @@ class BDDBenchmarkGrapher:
         :param name: The name of the analysed fault tree.
         """
         self._results = results
-        self._bdd_nodes, self.min_bdd_nodes = [], []
-        self._ord_times, self.con_times, self.min_times = [], [], []
+        self._bdd_nodes, self._min_bdd_nodes = [], []
+        self._ord_times, self._con_times, self._min_times = [], [], []
         self._xticks = []
         self._indices = list(range(len(results)))
         self._name = name
@@ -217,10 +218,10 @@ class BDDBenchmarkGrapher:
         for ordering, result in self._results.items():
             self._xticks.append(ordering.get_ordering_type())
             self._bdd_nodes.append(result.bdd_nodes)
-            self.min_bdd_nodes.append(result.min_bdd_nodes)
+            self._min_bdd_nodes.append(result.min_bdd_nodes)
             self._ord_times.append(result.ordering_time)
-            self.con_times.append(result.construction_time)
-            self.min_times.append(result.minimising_time)
+            self._con_times.append(result.construction_time)
+            self._min_times.append(result.minimising_time)
 
     def _draw_results(self):
         """
@@ -247,7 +248,7 @@ class BDDBenchmarkGrapher:
         axes.set_ylabel('Number of nodes')
         axes.bar(self._indices, self._bdd_nodes, .25, align='center',
                  label='Unminimised nodes')
-        axes.bar(self._indices, self.min_bdd_nodes, .25, align='edge',
+        axes.bar(self._indices, self._min_bdd_nodes, .25, align='edge',
                  label='Minimised nodes')
 
     def _draw_times_axes(self, axes):
@@ -262,9 +263,9 @@ class BDDBenchmarkGrapher:
         axes.set_ylabel('Time (s)')
         axes.plot(self._indices, self._ord_times, 'rx', alpha=.7, mew=5,
                   ms=10, label='Ordering time')
-        axes.plot(self._indices, self.con_times, 'co', alpha=.7, mew=5,
+        axes.plot(self._indices, self._con_times, 'co', alpha=.7, mew=5,
                   ms=10, label='Construction time')
-        axes.plot(self._indices, self.min_times, 'k+', alpha=.7, mew=5,
+        axes.plot(self._indices, self._min_times, 'k+', alpha=.7, mew=5,
                   ms=10, label='Minimising time')
 
     def _draw_ticks_title(self, axes):
