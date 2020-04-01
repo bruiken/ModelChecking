@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.5" />
+<title>ModelChecking.prettyprinting.faulttree API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ModelChecking.prettyprinting.faulttree</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from networkx.drawing.nx_agraph import graphviz_layout
+from prettyprinting.baseprinter import PrettyPrint
+
+
+class PrettyPrintFaultTree(PrettyPrint):
+    &#34;&#34;&#34;
+    Pretty printer for fault trees.
+    Prints the fault tree in a tree like structure, uses the images
+    defined in the FaultTree class to display the gates. Basic events are
+    drawn as regular nodes.
+    The edges and base events are colored according to their state.
+    The nodes are labelled with their name.
+    Uses networkx and pygraphviz.
+    &#34;&#34;&#34;
+
+    def __init__(self, fault_tree, image_size=0.1, font_size=13):
+        &#34;&#34;&#34;
+        Constructor for a PrettyPrintFaultTree class.
+        :param fault_tree: The fault tree to be printed.
+        :param image_size: The image size (for the gates).
+        :param font_size: Font size for the labels.
+        &#34;&#34;&#34;
+        self._fault_tree = fault_tree
+        self._graph = nx.DiGraph()  # using a DirectedGraph for a tree
+        self._image_size = image_size
+        self._font_size = font_size
+
+    def _pretty_print(self):
+        &#34;&#34;&#34;
+        Pretty print for the fault trees calls the create graph function.
+        After that the graph is drawn using the draw graph function.
+        &#34;&#34;&#34;
+        self._create_graph()
+        self._draw_graph()
+
+    def _create_graph(self):
+        &#34;&#34;&#34;
+        Adds all the gates to the networkx graph structure.
+        To do this, the add nodes function is called with the full system.
+        &#34;&#34;&#34;
+        self._add_nodes(self._fault_tree.get_system())
+
+    def _add_nodes(self, gate):
+        &#34;&#34;&#34;
+        Adds a node for the given gate and recursively calls the function
+        on all the input gates of it.
+        Then it also creates edges from the gate to the child gates.
+        The other way around would make more sense but then the tree gets
+        printed upside down.
+        :param gate: The gate to add to the graph.
+        &#34;&#34;&#34;
+        self._graph.add_node(gate.get_unique_index())
+        for child_gate in gate.get_input_gates():
+            self._add_nodes(child_gate)
+            self._graph.add_edge(
+                gate.get_unique_index(),
+                child_gate.get_unique_index()
+            )
+
+    def _draw_graph(self):
+        &#34;&#34;&#34;
+        Draw graph draws the entire graph. This is done by first drawing
+        the edges, then the labels and finally the nodes.
+        Even though all the parts are drawn seperately, we still call the
+        draw function on the entire graph to force a plot with the correct
+        size.
+        The positions for all the nodes are calculated using
+        graphviz_layout.
+        &#34;&#34;&#34;
+        pos = graphviz_layout(self._graph, prog=&#39;dot&#39;)
+        nx.draw(self._graph, pos, node_size=0, edgelist=[])
+        self._draw_edges(pos)
+        self._draw_labels(pos)
+        self._draw_nodes(pos)
+
+    def _draw_edges(self, pos):
+        &#34;&#34;&#34;
+        Draws the edges of the graph.
+        It first splits up the edges in edges which are on and off, then
+        draws them with either green or red respectively.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        edges_on, edges_off = [], []
+        for source, dest in self._graph.edges():
+            if self._fault_tree.get_gate(dest).apply(False):
+                edges_on.append((source, dest))
+            else:
+                edges_off.append((source, dest))
+        nx.draw_networkx_edges(self._graph, pos, edges_on, edge_color=&#39;g&#39;,
+                               width=3, arrows=False)
+        nx.draw_networkx_edges(self._graph, pos, edges_off, edge_color=&#39;r&#39;,
+                               width=3, arrows=False)
+
+    def _draw_labels(self, pos):
+        &#34;&#34;&#34;
+        Draws the labels for the nodes. For this a new Axes object is
+        created. This axes has a high Z-order so it is drawn on top of the
+        graph.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        label_axis = plt.Axes(plt.gcf(), [0, 0, 1, 1])
+        label_axis.set_axis_off()
+        label_axis.set_zorder(10)
+        plt.gcf().add_axes(label_axis)
+        for node in self._graph.nodes:
+            name = self._fault_tree.get_gate(node).get_name()
+            label_axis.text(*pos[node], name, ha=&#39;center&#39;, va=&#39;center&#39;,
+                            transform=label_axis.transData, weight=&#39;bold&#39;,
+                            color=(.3, .3, .3), fontsize=self._font_size)
+
+    def _draw_nodes(self, pos):
+        &#34;&#34;&#34;
+        Draw the nodes of the graph.
+        This is done in three steps: the basic events, the non-basic
+        events and finally the images of the gates.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        self._draw_basic_events(pos)
+        self._draw_non_basic_gates(pos)
+        self._draw_node_images(pos)
+
+    def _draw_basic_events(self, pos):
+        &#34;&#34;&#34;
+        Draws the basic events of the graph.
+        They are first split up based on their state. Then drawn in green
+        or red if they are on or off.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        node_on, node_off = [], []
+        for basic_event in self._fault_tree.get_basic_events().values():
+            if self._fault_tree.get_gate(basic_event.get_unique_index()):
+                if basic_event.get_state():
+                    node_on.append(basic_event.get_unique_index())
+                else:
+                    node_off.append(basic_event.get_unique_index())
+        nx.draw_networkx_nodes(self._graph, pos, node_on, node_color=&#39;g&#39;)
+        nx.draw_networkx_nodes(self._graph, pos, node_off, node_color=&#39;r&#39;)
+
+    def _draw_non_basic_gates(self, pos):
+        &#34;&#34;&#34;
+        Draws all the non-basic events.
+        The nodes are drawn with a size of 0 since we use images to
+        represent them.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        basic_events = list(map(
+            lambda x: x.get_unique_index(),
+            self._fault_tree.get_basic_events().values()
+        ))
+        nodes = []
+        for node in self._graph.nodes:
+            if node not in basic_events:
+                nodes.append(node)
+        nx.draw_networkx_nodes(self._graph, pos, nodes, node_size=0)
+
+    def _draw_node_images(self, pos):
+        &#34;&#34;&#34;
+        Draws the images for the gates (that have an image path).
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        ax = plt.gca()
+        for node in self._graph.nodes:
+            img = self._fault_tree.get_gate(node).get_image_path()
+            if img:
+                self._draw_node_image(node, img, pos, ax)
+
+    def _draw_node_image(self, node, img, pos, ax):
+        &#34;&#34;&#34;
+        Draws the node image for a certain node.
+        :param node: The node to draw the image on.
+        :param img: The path to the image to draw.
+        :param pos: The positions for all the nodes.
+        :param ax: The axes to draw the images on.
+        &#34;&#34;&#34;
+        x, y = self._transform_coords(pos[node], ax)
+        a = plt.axes([x - self._image_size / 2, y - self._image_size / 2,
+                      self._image_size, self._image_size])
+        a.axis(&#39;off&#39;)
+        a.imshow(mpimg.imread(img))
+
+    @staticmethod
+    def _transform_coords(coordinates, ax):
+        &#34;&#34;&#34;
+        Transforms coordinates of the node positions to coordinates
+        relative on the screen ([0, 1]).
+        :param coordinates: The coordinates to transform.
+        :param ax: The axis to transform from.
+        :return: the transformed coordinates.
+        &#34;&#34;&#34;
+        ax_trans = ax.transData.transform
+        fig_trans = plt.gcf().transFigure.inverted().transform
+        return fig_trans(ax_trans(coordinates))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ModelChecking.prettyprinting.faulttree.PrettyPrintFaultTree"><code class="flex name class">
+<span>class <span class="ident">PrettyPrintFaultTree</span></span>
+<span>(</span><span>fault_tree, image_size=0.1, font_size=13)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Pretty printer for fault trees.
+Prints the fault tree in a tree like structure, uses the images
+defined in the FaultTree class to display the gates. Basic events are
+drawn as regular nodes.
+The edges and base events are colored according to their state.
+The nodes are labelled with their name.
+Uses networkx and pygraphviz.</p>
+<p>Constructor for a PrettyPrintFaultTree class.
+:param fault_tree: The fault tree to be printed.
+:param image_size: The image size (for the gates).
+:param font_size: Font size for the labels.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PrettyPrintFaultTree(PrettyPrint):
+    &#34;&#34;&#34;
+    Pretty printer for fault trees.
+    Prints the fault tree in a tree like structure, uses the images
+    defined in the FaultTree class to display the gates. Basic events are
+    drawn as regular nodes.
+    The edges and base events are colored according to their state.
+    The nodes are labelled with their name.
+    Uses networkx and pygraphviz.
+    &#34;&#34;&#34;
+
+    def __init__(self, fault_tree, image_size=0.1, font_size=13):
+        &#34;&#34;&#34;
+        Constructor for a PrettyPrintFaultTree class.
+        :param fault_tree: The fault tree to be printed.
+        :param image_size: The image size (for the gates).
+        :param font_size: Font size for the labels.
+        &#34;&#34;&#34;
+        self._fault_tree = fault_tree
+        self._graph = nx.DiGraph()  # using a DirectedGraph for a tree
+        self._image_size = image_size
+        self._font_size = font_size
+
+    def _pretty_print(self):
+        &#34;&#34;&#34;
+        Pretty print for the fault trees calls the create graph function.
+        After that the graph is drawn using the draw graph function.
+        &#34;&#34;&#34;
+        self._create_graph()
+        self._draw_graph()
+
+    def _create_graph(self):
+        &#34;&#34;&#34;
+        Adds all the gates to the networkx graph structure.
+        To do this, the add nodes function is called with the full system.
+        &#34;&#34;&#34;
+        self._add_nodes(self._fault_tree.get_system())
+
+    def _add_nodes(self, gate):
+        &#34;&#34;&#34;
+        Adds a node for the given gate and recursively calls the function
+        on all the input gates of it.
+        Then it also creates edges from the gate to the child gates.
+        The other way around would make more sense but then the tree gets
+        printed upside down.
+        :param gate: The gate to add to the graph.
+        &#34;&#34;&#34;
+        self._graph.add_node(gate.get_unique_index())
+        for child_gate in gate.get_input_gates():
+            self._add_nodes(child_gate)
+            self._graph.add_edge(
+                gate.get_unique_index(),
+                child_gate.get_unique_index()
+            )
+
+    def _draw_graph(self):
+        &#34;&#34;&#34;
+        Draw graph draws the entire graph. This is done by first drawing
+        the edges, then the labels and finally the nodes.
+        Even though all the parts are drawn seperately, we still call the
+        draw function on the entire graph to force a plot with the correct
+        size.
+        The positions for all the nodes are calculated using
+        graphviz_layout.
+        &#34;&#34;&#34;
+        pos = graphviz_layout(self._graph, prog=&#39;dot&#39;)
+        nx.draw(self._graph, pos, node_size=0, edgelist=[])
+        self._draw_edges(pos)
+        self._draw_labels(pos)
+        self._draw_nodes(pos)
+
+    def _draw_edges(self, pos):
+        &#34;&#34;&#34;
+        Draws the edges of the graph.
+        It first splits up the edges in edges which are on and off, then
+        draws them with either green or red respectively.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        edges_on, edges_off = [], []
+        for source, dest in self._graph.edges():
+            if self._fault_tree.get_gate(dest).apply(False):
+                edges_on.append((source, dest))
+            else:
+                edges_off.append((source, dest))
+        nx.draw_networkx_edges(self._graph, pos, edges_on, edge_color=&#39;g&#39;,
+                               width=3, arrows=False)
+        nx.draw_networkx_edges(self._graph, pos, edges_off, edge_color=&#39;r&#39;,
+                               width=3, arrows=False)
+
+    def _draw_labels(self, pos):
+        &#34;&#34;&#34;
+        Draws the labels for the nodes. For this a new Axes object is
+        created. This axes has a high Z-order so it is drawn on top of the
+        graph.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        label_axis = plt.Axes(plt.gcf(), [0, 0, 1, 1])
+        label_axis.set_axis_off()
+        label_axis.set_zorder(10)
+        plt.gcf().add_axes(label_axis)
+        for node in self._graph.nodes:
+            name = self._fault_tree.get_gate(node).get_name()
+            label_axis.text(*pos[node], name, ha=&#39;center&#39;, va=&#39;center&#39;,
+                            transform=label_axis.transData, weight=&#39;bold&#39;,
+                            color=(.3, .3, .3), fontsize=self._font_size)
+
+    def _draw_nodes(self, pos):
+        &#34;&#34;&#34;
+        Draw the nodes of the graph.
+        This is done in three steps: the basic events, the non-basic
+        events and finally the images of the gates.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        self._draw_basic_events(pos)
+        self._draw_non_basic_gates(pos)
+        self._draw_node_images(pos)
+
+    def _draw_basic_events(self, pos):
+        &#34;&#34;&#34;
+        Draws the basic events of the graph.
+        They are first split up based on their state. Then drawn in green
+        or red if they are on or off.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        node_on, node_off = [], []
+        for basic_event in self._fault_tree.get_basic_events().values():
+            if self._fault_tree.get_gate(basic_event.get_unique_index()):
+                if basic_event.get_state():
+                    node_on.append(basic_event.get_unique_index())
+                else:
+                    node_off.append(basic_event.get_unique_index())
+        nx.draw_networkx_nodes(self._graph, pos, node_on, node_color=&#39;g&#39;)
+        nx.draw_networkx_nodes(self._graph, pos, node_off, node_color=&#39;r&#39;)
+
+    def _draw_non_basic_gates(self, pos):
+        &#34;&#34;&#34;
+        Draws all the non-basic events.
+        The nodes are drawn with a size of 0 since we use images to
+        represent them.
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        basic_events = list(map(
+            lambda x: x.get_unique_index(),
+            self._fault_tree.get_basic_events().values()
+        ))
+        nodes = []
+        for node in self._graph.nodes:
+            if node not in basic_events:
+                nodes.append(node)
+        nx.draw_networkx_nodes(self._graph, pos, nodes, node_size=0)
+
+    def _draw_node_images(self, pos):
+        &#34;&#34;&#34;
+        Draws the images for the gates (that have an image path).
+        :param pos: The positions for all the nodes.
+        &#34;&#34;&#34;
+        ax = plt.gca()
+        for node in self._graph.nodes:
+            img = self._fault_tree.get_gate(node).get_image_path()
+            if img:
+                self._draw_node_image(node, img, pos, ax)
+
+    def _draw_node_image(self, node, img, pos, ax):
+        &#34;&#34;&#34;
+        Draws the node image for a certain node.
+        :param node: The node to draw the image on.
+        :param img: The path to the image to draw.
+        :param pos: The positions for all the nodes.
+        :param ax: The axes to draw the images on.
+        &#34;&#34;&#34;
+        x, y = self._transform_coords(pos[node], ax)
+        a = plt.axes([x - self._image_size / 2, y - self._image_size / 2,
+                      self._image_size, self._image_size])
+        a.axis(&#39;off&#39;)
+        a.imshow(mpimg.imread(img))
+
+    @staticmethod
+    def _transform_coords(coordinates, ax):
+        &#34;&#34;&#34;
+        Transforms coordinates of the node positions to coordinates
+        relative on the screen ([0, 1]).
+        :param coordinates: The coordinates to transform.
+        :param ax: The axis to transform from.
+        :return: the transformed coordinates.
+        &#34;&#34;&#34;
+        ax_trans = ax.transData.transform
+        fig_trans = plt.gcf().transFigure.inverted().transform
+        return fig_trans(ax_trans(coordinates))</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>prettyprinting.baseprinter.PrettyPrint</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ModelChecking.prettyprinting" href="index.html">ModelChecking.prettyprinting</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ModelChecking.prettyprinting.faulttree.PrettyPrintFaultTree" href="#ModelChecking.prettyprinting.faulttree.PrettyPrintFaultTree">PrettyPrintFaultTree</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
