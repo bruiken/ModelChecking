@@ -96,8 +96,9 @@ class FaultTree:
         Constructs the set of all Gates in the system and returns it.
         """
         def gates(x):
-            return [x.input_gates] + \
-                   [gates(y) for y in x.input_gates if x.input_gates]
+            return [x.get_input_gates()] + \
+                   [gates(y) for y in x.get_input_gates()
+                    if x.get_input_gates()]
 
         return list(flatten(gates(self._system))) + [self._system]
 
